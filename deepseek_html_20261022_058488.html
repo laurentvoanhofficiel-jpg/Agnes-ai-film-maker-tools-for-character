@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Moebius Film Library — v5</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;background:#1a0f0a;color:#e8dcc8;min-height:100vh;padding:1rem 1rem 16rem;font-size:14px;line-height:1.5}
+.wrap{max-width:1600px;margin:0 auto}
+header{text-align:center;padding:1.5rem 0;border-bottom:1px solid #3d2418;margin-bottom:1.5rem}
+h1{font-family:Georgia,serif;font-size:2.4rem;font-weight:300;letter-spacing:.02em;margin-bottom:.4rem;background:linear-gradient(135deg,#6bafc4 0%,#d4a56a 50%,#e87b35 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1.05}
+.sub{font-family:Georgia,serif;font-style:italic;font-size:.85rem;color:#8a7a5c}
+.kata{font-size:.7rem;letter-spacing:.4em;color:#6bafc4;opacity:.75;text-transform:uppercase;margin-bottom:.5rem}
+.banner{background:linear-gradient(135deg,rgba(107,175,196,.08),rgba(212,165,106,.06));border:1px solid #3d2418;border-left:3px solid #6bafc4;border-radius:4px;padding:1rem 1.15rem;font-size:.78rem;color:#a89578;margin-bottom:1.2rem;line-height:1.65;font-family:Georgia,serif}
+.banner strong{color:#e8dcc8}
+.card{background:#231409;border:1px solid #3d2418;border-radius:4px;margin-bottom:1rem;overflow:hidden}
+.card-head{padding:.85rem 1rem;border-bottom:1px solid #3d2418;display:flex;justify-content:space-between;align-items:center;font-size:.72rem;text-transform:uppercase;letter-spacing:.15em;color:#d4c5a8;font-weight:600;font-family:Georgia,serif;flex-wrap:wrap;gap:.5rem}
+.card-head .badge{font-size:.6rem;padding:.15rem .5rem;border:1px solid #6bafc4;color:#6bafc4;border-radius:2px;letter-spacing:.1em;background:rgba(107,175,196,.15)}
+.card-body{padding:1rem}
+textarea{width:100%;background:#150c06;border:1px solid #3d2418;border-radius:4px;padding:.7rem .85rem;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:.78rem;color:#e8dcc8;outline:none;min-height:80px;resize:vertical;line-height:1.55}
+textarea:focus{border-color:#6bafc4;box-shadow:0 0 0 3px rgba(107,175,196,.15)}
+input[type="number"],input[type="text"]{background:#150c06;border:1px solid #3d2418;border-radius:3px;padding:.35rem .5rem;color:#e8dcc8;font-size:.75rem;font-family:ui-monospace,monospace;outline:none}
+input[type="number"]:focus,input[type="text"]:focus{border-color:#6bafc4}
+select{width:100%;background:#150c06;border:1px solid #3d2418;border-radius:4px;padding:.6rem .85rem;color:#e8dcc8;font-size:.82rem;font-family:Georgia,serif;outline:none;cursor:pointer;margin-bottom:.5rem}
+select:focus{border-color:#6bafc4}
+select option{background:#150c06;color:#e8dcc8;padding:.3rem}
+.btn{padding:.7rem;border-radius:4px;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:1px solid;transition:all .15s;font-family:Georgia,serif}
+.btn-amber{background:linear-gradient(135deg,rgba(212,165,106,.18),rgba(232,123,53,.1));border-color:#d4a56a;color:#d4a56a}
+.btn-amber:hover:not(:disabled){background:rgba(212,165,106,.28)}
+.btn-amber:disabled{opacity:.3;cursor:not-allowed}
+.btn-slate{background:transparent;border-color:#3d2418;color:#a89578;font-size:.66rem;padding:.5rem;font-family:-apple-system,sans-serif}
+.btn-slate:hover:not(:disabled){color:#6bafc4;border-color:#6bafc4}
+.btn-slate:disabled{opacity:.3;cursor:not-allowed}
+.btn-mega{background:linear-gradient(135deg,#6bafc4,#d4a56a,#e87b35);border:none;color:#1a0f0a;padding:1rem;font-size:.85rem;letter-spacing:.18em;border-radius:5px;box-shadow:0 4px 20px rgba(107,175,196,.3);font-family:Georgia,serif;font-weight:700;width:100%}
+.btn-mega:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 28px rgba(107,175,196,.5)}
+.btn-mega:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-danger{background:rgba(196,69,54,.15);border:1px solid #7f1d1d;color:#f87171;padding:.6rem 1rem;border-radius:4px;font-size:.7rem;cursor:pointer;font-family:Georgia,serif;letter-spacing:.08em}
+.btn-danger:hover{background:rgba(196,69,54,.25)}
+.row{display:flex;gap:.5rem;margin-top:.6rem;flex-wrap:wrap}
+.row .btn{flex:1;min-width:100px}
+.status{display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;background:#150c06;border:1px solid #3d2418;border-radius:4px;font-size:.72rem;color:#8a7a5c;margin-top:.5rem}
+.status.ok{background:rgba(16,185,129,.08);border-color:#065f46;color:#34d399}
+.status.err{background:rgba(196,69,54,.1);border-color:#7f1d1d;color:#f87171}
+.status.loading{background:rgba(212,165,106,.1);border-color:#d4a56a;color:#d4a56a}
+.status .dot{width:6px;height:6px;border-radius:50%;background:#4a3828;flex-shrink:0}
+.status.ok .dot{background:#10b981;box-shadow:0 0 6px #10b981}
+.status.err .dot{background:#c44536}
+.status.loading .dot{background:#d4a56a;animation:pulse 1s infinite}
+@keyframes pulse{0%{opacity:1}50%{opacity:.3}100%{opacity:1}}
+.hint{font-size:.68rem;color:#8a7a5c;margin-top:.4rem;font-family:Georgia,serif;font-style:italic}
+.images-grid{display:grid;grid-template-columns:minmax(0,320px);justify-content:center;margin-bottom:.6rem}
+.slot{border:2px dashed #4a3828;border-radius:4px;padding:.5rem;text-align:center;cursor:pointer;position:relative;transition:all .15s;background:#150c06;min-height:220px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.4rem}
+.slot:hover{border-color:#6bafc4;background:rgba(107,175,196,.04)}
+.slot.filled{border-style:solid;border-color:#d4a56a;padding:.3rem}
+.slot input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.slot .icon{font-size:1.8rem;opacity:.5}
+.slot .txt{font-size:.75rem;color:#a89578;font-family:Georgia,serif}
+.slot img{max-width:100%;max-height:300px;border-radius:3px;display:block;object-fit:contain}
+.slot .rm{position:absolute;top:6px;right:6px;background:rgba(196,69,54,.9);color:#fff;border:none;border-radius:3px;width:24px;height:24px;font-size:.7rem;cursor:pointer;z-index:2}
+.keys-panel{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
+.key-chip{font-size:.6rem;padding:.2rem .5rem;border:1px solid #3d2418;border-radius:3px;background:#150c06;color:#8a7a5c;font-family:ui-monospace,monospace;display:flex;align-items:center;gap:.3rem}
+.key-chip .dot{width:5px;height:5px;border-radius:50%;background:#10b981}
+.key-chip.slow .dot{background:#e5c15a}
+.key-chip.dead .dot{background:#c44536}
+.categories-list{display:flex;flex-direction:column;gap:.6rem;margin-top:.5rem}
+.category{background:#150c06;border:1px solid #3d2418;border-radius:4px;padding:.75rem;transition:border-color .15s}
+.category.enabled{border-color:#4a6b3a}
+.category.enabled:hover{border-color:#6bafc4}
+.cat-head{display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap}
+.cat-check{display:flex;align-items:center;gap:.5rem;cursor:pointer;flex:1;min-width:200px}
+.cat-check input{width:16px;height:16px;accent-color:#6bafc4;cursor:pointer;flex-shrink:0}
+.cat-icon{font-size:1.1rem;flex-shrink:0}
+.cat-name{font-family:Georgia,serif;font-size:.85rem;color:#e8dcc8}
+.cat-count-wrap{display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:#8a7a5c;font-family:ui-monospace,monospace;flex-wrap:wrap}
+.cat-count{width:60px;text-align:center}
+.items-section{margin-top:.55rem;padding:.55rem;background:#1a0f0a;border:1px solid #3d2418;border-radius:3px}
+.items-label{font-size:.65rem;color:#8a7a5c;margin-bottom:.4rem;font-family:ui-monospace,monospace}
+.items-grid{display:flex;flex-wrap:wrap;gap:.3rem}
+.item-check{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .5rem;background:#150c06;border:1px solid #3d2418;border-radius:3px;cursor:pointer;font-size:.68rem;color:#a89578;transition:all .15s;position:relative}
+.item-check:hover{border-color:#6bafc4;color:#e8dcc8}
+.item-check input{width:12px;height:12px;accent-color:#6bafc4;cursor:pointer;flex-shrink:0}
+.item-check.on{border-color:#6bafc4;background:rgba(107,175,196,.1);color:#e8dcc8}
+.item-rm{background:transparent;border:none;color:#8a7a5c;cursor:pointer;font-size:.7rem;padding:0;margin-left:.15rem}
+.item-rm:hover{color:#f87171}
+.add-item-btn{background:transparent;border:1px dashed #3d2418;color:#8a7a5c;font-size:.65rem;padding:.3rem .6rem;border-radius:3px;cursor:pointer;margin-top:.45rem;font-family:-apple-system,sans-serif}
+.add-item-btn:hover{color:#6bafc4;border-color:#6bafc4}
+.cat-desc{margin-top:.55rem;min-height:55px;font-size:.7rem}
+.cat-meta{display:flex;justify-content:space-between;align-items:center;margin-top:.4rem;font-size:.65rem;color:#8a7a5c;font-family:ui-monospace,monospace;gap:.5rem;flex-wrap:wrap}
+.cat-meta .combos{color:#6bafc4}
+.cat-meta .total-badge{color:#d4a56a;font-weight:700}
+.cat-preview-btn{background:transparent;border:1px solid #3d2418;color:#8a7a5c;font-size:.6rem;padding:.15rem .4rem;border-radius:2px;cursor:pointer;font-family:ui-monospace,monospace}
+.cat-preview-btn:hover{color:#6bafc4;border-color:#6bafc4}
+.cat-preview{display:none;margin-top:.4rem;background:#231409;border:1px solid #3d2418;border-radius:3px;padding:.5rem;font-size:.62rem;color:#a89578;font-family:ui-monospace,monospace;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.cat-preview.visible{display:block}
+.planner-summary{margin-top:.75rem;padding:.6rem .8rem;background:rgba(107,175,196,.06);border:1px solid #3d2418;border-left:3px solid #6bafc4;border-radius:4px;font-size:.72rem;color:#a89578;font-family:ui-monospace,monospace}
+.planner-summary strong{color:#6bafc4}
+.progress-bar{height:8px;background:#150c06;border-radius:4px;overflow:hidden;margin-bottom:.4rem}
+.progress-bar .fill{height:100%;background:linear-gradient(90deg,#6bafc4,#d4a56a,#e87b35);width:0%;transition:width .3s;border-radius:4px}
+.progress-bar .fill.done{background:linear-gradient(90deg,#10b981,#34d399)}
+.progress-pct{font-family:Georgia,serif;font-size:1.1rem;color:#6bafc4;text-align:center;margin-bottom:1rem}
+.result-category{margin-bottom:1.5rem;border-top:1px solid #3d2418;padding-top:.8rem}
+.result-category h3{font-family:Georgia,serif;font-size:.95rem;color:#d4a56a;margin-bottom:.6rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap}
+.result-category h3 .cat-stat{font-size:.7rem;color:#6bafc4;font-family:ui-monospace,monospace;font-weight:400}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem}
+.result-card{background:#231409;border:1px solid #3d2418;border-radius:4px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .3s,box-shadow .3s}
+.result-card.pending{border-color:#4a3828;opacity:.85}
+.result-card.generating{border-color:#d4a56a;box-shadow:0 0 14px rgba(212,165,106,.35)}
+.result-card.done{border-color:#6bafc4}
+.result-card.error{border-color:#7f1d1d}
+.result-img{aspect-ratio:9/16;background:#0a0603;display:flex;align-items:center;justify-content:center;position:relative;min-height:200px;overflow:hidden}
+.result-img img{width:100%;height:100%;object-fit:cover;display:block;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.result-img .load{width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.4rem;color:#4a3828;font-size:.65rem;font-family:ui-monospace,monospace;padding:.5rem;text-align:center;position:relative;overflow:hidden}
+.result-img .load::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(107,175,196,.08) 50%,transparent 70%);animation:shim 1.8s linear infinite;pointer-events:none}
+@keyframes shim{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.result-img .load .spin{width:20px;height:20px;border:2px solid rgba(212,165,106,.25);border-top-color:#d4a56a;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.result-img .err{color:#f87171;font-size:.62rem;padding:.5rem;text-align:center;display:flex;flex-direction:column;gap:.3rem}
+.result-img .err small{color:#8a7a5c;font-size:.55rem;font-family:ui-monospace,monospace}
+.result-meta{padding:.5rem;border-top:1px solid #3d2418;display:flex;justify-content:space-between;align-items:center;gap:.3rem;font-size:.6rem;font-family:ui-monospace,monospace;color:#8a7a5c}
+.result-meta a{color:#6bafc4;text-decoration:none;font-size:.7rem;padding:.15rem .4rem;border:1px solid #3d2418;border-radius:2px}
+.result-meta a:hover{border-color:#6bafc4}
+.panel{position:fixed;bottom:0;left:0;right:0;z-index:40}
+.handle{background:#231409;border-top:2px solid #d4a56a;padding:.55rem 1rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;gap:.5rem}
+.handle .toggle{font-family:ui-monospace,monospace;font-size:.72rem;color:#6bafc4;letter-spacing:.1em;flex-shrink:0}
+.handle .latest{font-size:.72rem;color:#a89578;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left;padding-left:.5rem}
+.handle button{font-size:.6rem;padding:.2rem .5rem;border:1px solid #3d2418;border-radius:3px;background:transparent;color:#8a7a5c;cursor:pointer;font-family:-apple-system,sans-serif}
+.handle button:hover{color:#6bafc4;border-color:#6bafc4}
+.panel-content{background:#150c06;border-top:1px solid #3d2418;max-height:55vh;overflow-y:auto}
+.panel-content.hidden{display:none}
+.human-log{max-height:100px;overflow-y:auto;padding:.6rem 1rem;border-bottom:1px solid #3d2418;font-family:ui-monospace,monospace;font-size:.7rem}
+.human-log>div{margin-bottom:.2rem}
+.human-log .t{color:#4a3828}
+.human-log .m{color:#a88b4a}
+.debug-log{max-height:240px;overflow-y:auto;padding:.6rem 1rem;font-family:ui-monospace,monospace;font-size:.66rem;line-height:1.5}
+.debug-log>div{margin-bottom:.15rem;word-break:break-word}
+.debug-log .t{color:#4a3828}
+.debug-log .info{color:#a89578}
+.debug-log .ok{color:#a88b4a}
+.debug-log .warn{color:#e5c15a}
+.debug-log .err{color:#f87171}
+.debug-log .api{color:#6bafc4}
+.toast{position:fixed;top:1rem;left:50%;transform:translateX(-50%) translateY(-120px);background:#231409;border:1px solid #3d2418;border-left:3px solid #6bafc4;border-radius:4px;padding:.75rem 1.2rem;font-size:.8rem;z-index:1000;opacity:0;transition:transform .3s,opacity .3s;max-width:90vw;text-align:center;font-family:Georgia,serif}
+.toast.visible{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.success{border-left-color:#10b981}
+.toast.error{border-left-color:#c44536}
+.toast.warn{border-left-color:#e5c15a}
+.status-bar{position:fixed;bottom:60px;left:0;right:0;background:#231409;border-top:1px solid #3d2418;padding:.5rem 1rem;font-size:.7rem;font-family:ui-monospace,monospace;color:#e8dcc8;display:flex;align-items:center;gap:.5rem;transform:translateY(100%);transition:transform .3s;z-index:30}
+.status-bar.visible{transform:translateY(0)}
+.status-bar .spinner{width:12px;height:12px;border:2px solid rgba(212,165,106,.2);border-top-color:#d4a56a;border-radius:50%;animation:spin .8s linear infinite}
+.hidden{display:none!important}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:#150c06}
+::-webkit-scrollbar-thumb{background:#4a3828;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#6bafc4}
+@media(min-width:900px){.result-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+<div class="kata">✦ Moebius Film Library — v5 ✦</div>
+<h1>Bibliothèque d'Images pour Film</h1>
+<p class="sub">Analyse forensique · Listes d'éléments cochables · Persistance locale · 15 styles d'auteurs</p>
+</header>
+
+<div class="banner">
+<strong>Nouveautés v5 :</strong> Chaque catégorie affiche <strong>la liste complète de ses éléments en cases à cocher</strong> (20 lieux, 12 animaux, 19 métiers, 14 sports…). Vous cochez ce dont vous avez besoin, vous ajoutez vos propres éléments, et <strong>tout est sauvegardé automatiquement</strong> dans votre navigateur (clés, catégories, items, style, description). Les scènes à plusieurs personnages spécifient explicitement <strong>« Two characters clearly visible »</strong> pour que la famille/les amis apparaissent vraiment.
+</div>
+
+<section class="card">
+<div class="card-head"><span>🔑 Clés API (persistantes)</span><span class="badge" id="keyBadge">0 clé</span></div>
+<div class="card-body">
+<textarea id="keysInput" placeholder="Collez vos clés API ici, une par ligne :&#10;sk-xxxxxxxxxxxx&#10;sk-yyyyyyyyyyyy" autocomplete="off" spellcheck="false"></textarea>
+<div class="row">
+<button class="btn btn-amber" id="validateBtn">⚡ Valider et sauvegarder</button>
+<button class="btn btn-slate" id="clearKeysBtn" style="flex:0 0 auto;min-width:80px;">Effacer</button>
+</div>
+<div class="keys-panel" id="keysPanel"></div>
+<div class="status" id="keyStatus"><span class="dot"></span><span id="keyStatusText">Aucune clé enregistrée</span></div>
+<div class="hint">Validées en parallèle, sauvegardées dans le navigateur, rechargées automatiquement.</div>
+</div>
+</section>
+
+<section class="card">
+<div class="card-head"><span>🖼️ Image de référence</span><span class="badge" id="refBadge">0 image</span></div>
+<div class="card-body">
+<p class="hint">Une seule image. Visage, moustache/barbe et vêtements bien visibles.</p>
+<div class="images-grid" id="imagesGrid"></div>
+<div class="status" id="analyzeStatus"><span class="dot"></span><span id="analyzeStatusText">En attente d'image</span></div>
+<div class="row">
+<button class="btn btn-amber" id="analyzeBtn" disabled>🔍 Analyser le personnage en détail</button>
+</div>
+<div style="margin-top:1rem;">
+<label style="font-size:.7rem;color:#8a7a5c;display:block;margin-bottom:.3rem;">📝 Description (modifiable, injectée dans tous les prompts) :</label>
+<textarea id="charDescInput" placeholder="Ex: A middle-aged man with warm brown skin, wearing a light blue knit beanie with a small white tag. He has a dark thin mustache and a goatee. He wears a light grey zip-up hoodie under a dark heavy jacket..." style="min-height:130px;"></textarea>
+</div>
+</div>
+</section>
+
+<section class="card">
+<div class="card-head"><span>🎨 Direction artistique</span></div>
+<div class="card-body">
+<label style="font-size:.7rem;color:#8a7a5c;display:block;margin-bottom:.3rem;">Style (15 presets) :</label>
+<select id="styleSelect"></select>
+<textarea id="styleInput" style="min-height:130px;"></textarea>
+<div class="hint">Le style est préfixé à chaque prompt. Modifiable librement.</div>
+</div>
+</section>
+
+<section class="card">
+<div class="card-head"><span>🎬 Plan de la bibliothèque</span><span class="badge" id="plannerBadge">0 image</span></div>
+<div class="card-body">
+<div id="categoriesList" class="categories-list"></div>
+<div class="row">
+<button class="btn btn-slate" id="resetPlannerBtn" style="flex:1;">↺ Réinitialiser toutes les catégories</button>
+</div>
+<div class="planner-summary" id="plannerSummary">Aucune catégorie active.</div>
+<button class="btn btn-mega" id="generateBtn" disabled style="margin-top:1rem;">✦ Générer la bibliothèque</button>
+<div class="row" style="margin-top:.5rem;">
+<button class="btn btn-danger hidden" id="stopBtn" style="flex:0 0 auto;">⏹ Stopper</button>
+</div>
+</div>
+</section>
+
+<section class="card hidden" id="resultsCard">
+<div class="card-head"><span>📚 Bibliothèque générée</span><span class="badge" id="resultsBadge">0 / 0</span></div>
+<div class="card-body">
+<div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+<div class="progress-pct" id="progressPct">0%</div>
+<div id="resultsRoot"></div>
+</div>
+</section>
+
+</div>
+
+<div class="panel">
+<div class="handle" id="panelHandle">
+<span class="toggle" id="panelToggle">▼ CONSOLE</span>
+<span class="latest" id="humanLatest">Prêt.</span>
+<button id="copyConsoleBtn">Copier</button>
+<button id="clearConsoleBtn">Effacer</button>
+</div>
+<div class="panel-content hidden" id="panelContent">
+<div class="human-log" id="humanLog"></div>
+<div class="debug-log" id="debugLog"></div>
+</div>
+</div>
+
+<div class="toast" id="toast"><span id="toastText">Message</span></div>
+<div class="status-bar" id="statusBar"><div class="spinner"></div><span id="statusText">Préparation…</span></div>
+
+<script>
+'use strict';
+
+// ============================================================
+// CONFIG
+// ============================================================
+const API_BASE = 'https://apihub.agnes-ai.com/v1';
+const MODEL_TEXT = 'agnes-2.5-flash';
+const MODEL_IMAGE = 'agnes-image-2.5-flash';
+const IMAGE_SIZE = '1024x1792';
+const MAX_CONCURRENT = 8;
+const MAX_ATTEMPTS = 5;
+const VISION_TIMEOUT = 60000;
+const IMAGE_TIMEOUT = 120000;
+const WORKER_COUNT = 8;
+const ADAPTIVE_DELAY = 2500;
+
+const STORAGE_KEYS = 'moebius_v5_keys';
+const STORAGE_CONFIG = 'moebius_v5_config';
+
+// ============================================================
+// STYLES D'AUTEURS — tous réécrits pour plus de beauté
+// ============================================================
+const STYLE_PRESETS = {
+  moebius: {
+    label: "Moebius — Ligne claire raffinée (Arzach, Le Garage Hermétique)",
+    prompt: "In the masterful style of Mœbius (Jean Giraud), iconic French science-fiction comic artist of Métal Hurlant magazine. Refined ligne claire illustration with precise ink contours of varying weight and beautiful parallel hatching building form and shadow. Color palette of sun-bleached pastels: pale ochre, dusty rose, soft turquoise, bone white, faded magenta. Dreamlike surreal landscapes with crystalline rock formations, towering architectural purity, cosmic silence, a floating vessel in the distance. The atmosphere of Arzach and Le Garage Hermétique. Delicate watercolor washes over ink linework, flat color regions with subtle tonal gradients, generous negative space, careful composition. Museum-quality illustration, extremely detailed, evocative, timeless masterpiece."
+  },
+  otomo: {
+    label: "Katsuhiro Otomo — Akira (manga cyberpunk)",
+    prompt: "In the masterful style of Katsuhiro Otomo, creator of Akira. Dense hyper-detailed ink linework with mechanical precision. Dramatic perspective, gritty cyberpunk atmosphere, Neo-Tokyo dystopian aesthetic. High-contrast black and white with selective neon accents (electric red, cyan, orange). Intricate urban chaos, smoke, debris, glowing signs, photorealistic human proportions. Cinematic manga panel composition, dramatic lighting, masterpiece manga illustration."
+  },
+  wesanderson: {
+    label: "Wes Anderson — Symétrie pastel cinématographique",
+    prompt: "In the meticulous cinematographic style of Wes Anderson. Perfectly symmetrical centered composition, flat frontal framing. Pastel color palette: dusty pink, mint green, mustard yellow, cream. Retro production design, whimsical props, theatrical staging. Soft diffuse light, deep focus, 35mm film grain. Deadpan mood, storybook aesthetic. Meticulous art direction, elegant symmetry, a single perfectly composed master shot. Masterpiece film still."
+  },
+  manga1: {
+    label: "Manga shōnen — dynamique et énergique",
+    prompt: "In the energetic style of Japanese shōnen manga (Weekly Shōnen Jump). Dynamic composition with bold diagonal lines. Sharp angular features, expressive large eyes, spiky hair. Dramatic speed lines, impact frames. Strong black ink contrasts with clean screentone shading. High-energy pose, iconic shōnen hero staging. Bold vivid hero illustration. Masterpiece manga artwork."
+  },
+  manga2: {
+    label: "Manga seinen — réaliste et sombre",
+    prompt: "In the mature style of Japanese seinen manga (Naoki Urasawa, Takehiko Inoue). Realistic adult proportions, intricate cross-hatching and stippling. Moody chiaroscuro ink shading, muted gray tones with selective washes. Cinematic panel composition, film-like framing. Psychological atmosphere, detailed urban backgrounds. Refined confident linework. Masterpiece manga illustration for mature readers."
+  },
+  manga3: {
+    label: "Manga shōjo — délicat et fleuri",
+    prompt: "In the delicate style of Japanese shōjo manga (CLAMP, Naoko Takeuchi). Flowing graceful linework, soft pastel watercolor washes. Expressive large eyes with luminous highlights, delicate blush. Floral motifs, sparkles, ribbons, decorative screentones. Romantic dreamy atmosphere, ethereal glow, emotional composition. Elegant slender figures. Masterpiece shōjo manga illustration."
+  },
+  hopper: {
+    label: "Edward Hopper — Solitude américaine",
+    prompt: "In the iconic style of Edward Hopper. American realist oil painting, mid-20th century. Isolated figure in an architectural urban setting. Strong directional light casting long shadows, geometric composition. Muted realistic palette: warm ochre, deep green, cobalt blue, bone white. An air of quiet alienation, contemplative stillness. Oil on canvas texture with visible brushwork. Masterpiece painting."
+  },
+  schiele: {
+    label: "Egon Schiele — Expressionnisme tourmenté",
+    prompt: "In the raw style of Egon Schiele. Viennese Expressionism. Distorted angular anatomy, gaunt elongated features. Nervous expressive ink contours, twisting poses. Pallid skin tones with bruise-like reds and browns. Unflinching direct gaze. Rough gouache and charcoal texture on paper. Psychological intensity, unsettling intimacy. Masterpiece painting in the Vienna Secession spirit."
+  },
+  hockney: {
+    label: "David Hockney — Couleurs californiennes",
+    prompt: "In the vibrant style of David Hockney. Sun-drenched California palette: pool blue, terracotta, palm green, crisp white. Flat color fields with clean graphic shadows. Acrylic on canvas texture, crisp edges. Modernist geometric composition, stylized reflections. Optimistic sunlit atmosphere. The aesthetic of A Bigger Splash and Portrait of an Artist. Masterpiece painting."
+  },
+  fusion: {
+    label: "✦ Fusion subtile — Tous les artistes",
+    prompt: "A subtle masterful fusion of Moebius's ligne claire refinement, Katsuhiro Otomo's cyberpunk detail, Wes Anderson's symmetrical composition, Edward Hopper's directional light and solitude, Egon Schiele's nervous expressiveness, and David Hockney's sunlit flat color. Harmonized into a singular aesthetic: intricate ink contours with selective fine hatching, dusty pastel and sun-warmed color palette, precise symmetrical staging, dramatic side lighting, expressive slightly stylized anatomy, crisp graphic shadows. A museum-quality masterpiece, singular, timeless."
+  },
+  gaudi: {
+    label: "Antoni Gaudí — Architecture organique",
+    prompt: "In the organic architectural style of Antoni Gaudí. Undulating biomorphic forms, mosaic trencadís surfaces, stained glass light. Wrought iron curves, nature-derived ornament (waves, bones, honeycombs). Warm Mediterranean palette: terracotta, cobalt, emerald, gold. Dreamlike structural rhythms. The spirit of Park Güell and Sagrada Família. Masterpiece architectural illustration."
+  },
+  artdeco: {
+    label: "Art déco — Géométrie luxueuse",
+    prompt: "In the luxurious style of 1920s Art Deco. Bold geometric ornamentation, symmetrical fan and chevron motifs. Gilded metallic accents, deep lacquer blacks, emerald and burgundy palette. Sleek streamlined forms, stylized elegant figures. The aesthetic of Tamara de Lempicka. Glamour of the Roaring Twenties. Graphic elegance, refined opulence. Masterpiece Art Deco illustration."
+  },
+  futuriste: {
+    label: "Futuriste — Néo-futurisme épuré",
+    prompt: "Sleek neo-futurist aesthetic inspired by Syd Mead and Blade Runner 2049. Hyper-modern surfaces, holographic light, minimalist white and chrome architecture. Cyan and violet accents, volumetric fog, quantum-tech detailing. Tranquil advanced civilization, refined lines. Cinematic wide composition, high-concept sci-fi. Masterpiece futuristic illustration."
+  },
+  retfuturiste: {
+    label: "Rétro-futuriste — Atompunk / Cassette futurism",
+    prompt: "Retro-futuristic atompunk and cassette-futurism aesthetic. 1960s–70s vision of tomorrow. Chunky analog dials, brushed aluminum, warm ochre and teal palette. CRT glow, vacuum-tube detailing, rounded streamlined machinery. Nostalgic optimism of the early space age. Inspired by 2001: A Space Odyssey and Fallout concept art. Masterpiece retro-futurist illustration."
+  },
+  excentrique: {
+    label: "Excentrique — Surréalisme baroque",
+    prompt: "Maximalist eccentric style inspired by Hieronymus Bosch, Leonora Carrington and Remedios Varo. Baroque surrealism, opulent layered textures. Unexpected juxtapositions of objects and creatures. Rich jewel tones, gold leaf detailing. Whimsical grotesque creatures, distorted perspective, ornate chaos. Oneiric dream-logic atmosphere. Masterpiece surrealist illustration."
+  }
+};
+const DEFAULT_STYLE_KEY = 'moebius';
+
+// ============================================================
+// VISION FORENSIQUE
+// ============================================================
+const VISION_SYS = `You are an ultra-precise forensic portrait artist. Describe the PRIMARY PERSON in the image with obsessive accuracy. Do NOT hallucinate.
+Output ONE dense paragraph in English (150-200 words). Follow this exact order:
+1. HEADWEAR: hat, beanie, cap, headband? Exact color, material, shape, logos/tags.
+2. FACE: apparent age, gender, skin tone, face shape, eyes (color/shape), eyebrows, nose, lips.
+3. FACIAL HAIR: extremely specific. mustache, goatee, stubble, full beard? Exact shape, thickness, color.
+4. CLOTHING: layers from inside out (e.g., "a light grey zip-up hoodie under a dark black jacket").
+5. ACCESSORIES: glasses, earrings, necklaces.
+6. SILHOUETTE: posture, build.
+If multiple people, focus ONLY on the most prominent foreground character.
+If no human, invent a highly specific marginal magnificent character with striking features and bizarre clothing, describe with same rigor.
+No bullets. Single comma-separated paragraph.`;
+
+const VISION_USER = "Analyze the primary person with extreme precision. Detail headwear, exact facial hair (mustache/beard), exact clothing layers (hoodies/jackets), and facial features. Do not skip clothes or hats.";
+
+// ============================================================
+// CATÉGORIES — CHAQUE LISTE EXPLICITE DANS LE CODE
+// ============================================================
+const DEFAULT_CATEGORIES = [
+  {
+    id: 'portraits', name: 'Portraits', icon: '👤', mode: 'variations', enabled: true, count: 10,
+    template: 'A portrait of {CHARACTER}. {FRAMING}. {EXPRESSION}. {LIGHTING}, {BACKGROUND}.',
+    variations: {
+      FRAMING: ['Extreme close-up on the face', 'Tight close-up portrait', 'Close-up from the shoulders up', 'Bust shot showing the upper chest', 'Medium close-up showing some clothing'],
+      EXPRESSION: ['with a calm neutral expression', 'with a subtle warm smile', 'with a thoughtful distant gaze', 'looking directly at the viewer', 'with a serious focused look', 'with a gentle melancholic expression'],
+      LIGHTING: ['soft golden hour light', 'diffuse overcast daylight', 'warm interior lamplight', 'cool blue moonlight', 'dramatic side lighting', 'soft window light'],
+      BACKGROUND: ['against a plain neutral wall', 'against a soft blurred backdrop', 'against a subtle warm gradient', 'against atmospheric fog']
+    }
+  },
+  {
+    id: 'fullbody', name: 'Personnage en pied', icon: '🧍', mode: 'variations', enabled: false, count: 8,
+    template: 'A full body shot of {CHARACTER}. {POSE}, {SETTING}, {LIGHTING}. Entire silhouette and all clothing layers clearly visible.',
+    variations: {
+      POSE: ['standing still with hands at his sides', 'walking slowly forward', 'leaning against a wall', 'sitting on the edge of a chair', 'looking out into the distance', 'mid-stride'],
+      SETTING: ['in an empty street', 'in a minimalist studio', 'in a vast hall', 'on a rooftop', 'in a courtyard'],
+      LIGHTING: ['soft golden hour light', 'dramatic side lighting', 'diffuse overcast daylight', 'warm interior glow']
+    }
+  },
+  {
+    id: 'family', name: 'Personnage + Famille', icon: '👨‍👩‍👧', mode: 'items', enabled: false, perItem: 2,
+    items: [
+      { id: 'father', label: 'Père', prompt: 'his father, an older weathered man of about 70 with white hair, deep wrinkles, a warm gaze and a brown wool sweater' },
+      { id: 'mother', label: 'Mère', prompt: 'his mother, a warm middle-aged woman with silver-streaked hair, a gentle smile, glasses and a floral apron' },
+      { id: 'sister', label: 'Sœur', prompt: 'his younger sister, a woman in her twenties with long brown hair, bright eyes and a denim jacket' },
+      { id: 'brother', label: 'Frère', prompt: 'his older brother, a tall serious man in his thirties with a short beard and a dark jacket' },
+      { id: 'grandma', label: 'Grand-mère', prompt: 'his grandmother, a small silver-haired woman with kind eyes and a knitted cardigan' },
+      { id: 'grandpa', label: 'Grand-père', prompt: 'his grandfather, a stoic old man with a lined face and a flat cap' },
+      { id: 'aunt', label: 'Tante', prompt: 'his aunt, a lively middle-aged woman with curly hair and colorful clothes' },
+      { id: 'uncle', label: 'Oncle', prompt: 'his uncle, a sturdy man with a mustache and a work shirt' },
+      { id: 'cousin', label: 'Cousin', prompt: 'his young cousin, an energetic teenager with short hair and a hoodie' },
+      { id: 'child', label: 'Enfant', prompt: 'a small child, about six years old, with wide curious eyes and simple clothes' }
+    ],
+    selectedItems: ['father', 'mother'],
+    template: 'A scene with TWO characters clearly visible in the same frame. The main protagonist: {CHARACTER}. Standing beside him: {ITEM}. They are {ACTION}, {SETTING}, {LIGHTING}. Both characters are equally present and distinct in the composition.',
+    variations: {
+      ACTION: ['sharing a quiet meal', 'walking side by side', 'in animated conversation', 'in a tender embrace', 'sitting in comfortable silence', 'laughing together'],
+      SETTING: ['in a family kitchen', 'in a modest living room', 'in a garden', 'on a park bench', 'on the porch of a house'],
+      LIGHTING: ['warm afternoon sunlight', 'soft morning glow', 'cozy evening lamplight', 'gentle window light']
+    }
+  },
+  {
+    id: 'friends', name: 'Personnage + Amis', icon: '🧑‍🤝‍🧑', mode: 'items', enabled: false, perItem: 2,
+    items: [
+      { id: 'one_friend', label: 'Un ami proche', prompt: 'a close friend of similar age, with a relaxed smile and casual clothes' },
+      { id: 'best_friend', label: 'Meilleur ami', prompt: 'his best friend, a friendly man with an easy laugh and a worn jacket' },
+      { id: 'two_friends', label: 'Deux amis', prompt: 'two close friends standing on either side of him' },
+      { id: 'three_friends', label: 'Trois amis', prompt: 'three friends forming a small group around him' },
+      { id: 'childhood', label: "Ami d'enfance", prompt: 'a childhood friend, familiar and comfortable, with a nostalgic presence' },
+      { id: 'diverse', label: 'Groupe diversifié', prompt: 'a diverse group of four friends from different backgrounds' }
+    ],
+    selectedItems: ['one_friend'],
+    template: 'The scene shows {CHARACTER} together with {ITEM}. All characters are clearly visible, {ACTION}, {SETTING}, {LIGHTING}. The group is present and distinct in the composition.',
+    variations: {
+      ACTION: ['laughing together', 'walking down the street', 'sharing drinks at a table', 'playing a board game', 'deep in conversation', 'sitting on a rooftop at sunset'],
+      SETTING: ['in a city street', 'on a café terrace', 'in a park', 'in a small apartment', 'in a lively bar', 'on a beach'],
+      LIGHTING: ['golden hour glow', 'neon night lights', 'warm afternoon sun', 'soft evening blue']
+    }
+  },
+  {
+    id: 'jobs', name: 'Personnage au travail', icon: '🔧', mode: 'items', enabled: false, perItem: 1,
+    items: [
+      { id: 'baker', label: 'Boulanger', prompt: 'working as a baker, surrounded by bread and ovens, wearing a white apron dusted with flour' },
+      { id: 'doctor', label: 'Médecin', prompt: 'working as a doctor, wearing a white coat and stethoscope, in a bright clinic' },
+      { id: 'teacher', label: 'Professeur', prompt: 'teaching in a classroom, holding a piece of chalk, writing on a blackboard' },
+      { id: 'farmer', label: 'Fermier', prompt: 'working as a farmer, in a field with a straw hat and work clothes' },
+      { id: 'mechanic', label: 'Mécanicien', prompt: 'working in a garage, under the hood of a car, with grease-stained hands' },
+      { id: 'painter', label: 'Peintre', prompt: 'painting at an easel in a studio, brush in hand, surrounded by canvases' },
+      { id: 'librarian', label: 'Bibliothécaire', prompt: 'shelving books in a quiet library aisle, in a soft cardigan' },
+      { id: 'carpenter', label: 'Charpentier', prompt: 'in a woodworking shop, planing a board, surrounded by wood shavings' },
+      { id: 'chef', label: 'Chef cuisinier', prompt: 'cooking in a restaurant kitchen, flames rising from a pan, wearing a chef jacket' },
+      { id: 'tailor', label: 'Tailleur', prompt: 'sewing at a worktable in a tailoring shop, with a tape measure around his neck' },
+      { id: 'postman', label: 'Facteur', prompt: 'delivering mail on a bicycle, wearing a postal uniform' },
+      { id: 'florist', label: 'Fleuriste', prompt: 'arranging flowers in a florist shop, surrounded by colorful bouquets' },
+      { id: 'bookseller', label: 'Libraire', prompt: 'in a bookshop among tall shelves of books, holding an open volume' },
+      { id: 'bartender', label: 'Barman', prompt: 'behind a bar polishing a glass, in a dimly lit tavern' },
+      { id: 'photographer', label: 'Photographe', prompt: 'in a studio holding a camera, surrounded by lights and backdrops' },
+      { id: 'journalist', label: 'Journaliste', prompt: 'writing at a cluttered desk with a typewriter and papers, in a newsroom' },
+      { id: 'astronaut', label: 'Astronaute', prompt: 'in a space suit floating inside a space station, looking out at Earth' },
+      { id: 'sailor', label: 'Marin', prompt: 'on a fishing boat hauling nets, in oilskins and a cap' },
+      { id: 'plumber', label: 'Plombier', prompt: 'working under a sink with tools, in work clothes' }
+    ],
+    selectedItems: ['baker', 'doctor'],
+    template: '{CHARACTER} is {ITEM}, {LIGHTING}. The workplace is clearly visible around him.',
+    variations: {
+      LIGHTING: ['in morning light', 'under warm workshop lamps', 'in fluorescent indoor light', 'in afternoon sun through windows', 'in dramatic chiaroscuro light']
+    }
+  },
+  {
+    id: 'sports', name: 'Personnage sportif', icon: '⚽', mode: 'items', enabled: false, perItem: 1,
+    items: [
+      { id: 'running', label: 'Course', prompt: 'running at full stride on a track, athletic gear' },
+      { id: 'swimming', label: 'Natation', prompt: 'swimming in a pool, water splashing around him' },
+      { id: 'football', label: 'Football', prompt: 'playing football on a pitch, mid-kick, wearing a jersey' },
+      { id: 'tennis', label: 'Tennis', prompt: 'playing tennis on a court, mid-serve, wearing white' },
+      { id: 'climbing', label: 'Escalade', prompt: 'climbing a rock face, hands gripping stone, chalk dust' },
+      { id: 'cycling', label: 'Cyclisme', prompt: 'riding a racing bicycle on a mountain road' },
+      { id: 'boxing', label: 'Boxe', prompt: 'in a boxing ring with gloved fists raised, focused gaze' },
+      { id: 'surfing', label: 'Surf', prompt: 'surfing a breaking wave, balanced on a board' },
+      { id: 'skiing', label: 'Ski', prompt: 'skiing down a snowy slope, leaning into a turn' },
+      { id: 'yoga', label: 'Yoga', prompt: 'in a yoga pose in a sunlit studio, calm and centered' },
+      { id: 'basketball', label: 'Basket', prompt: 'shooting a basketball, arms extended, on an outdoor court' },
+      { id: 'rowing', label: 'Aviron', prompt: 'rowing a shell on a calm river, arms mid-stroke' },
+      { id: 'judo', label: 'Judo', prompt: 'in a judo gi, mid-throw on a mat' },
+      { id: 'horse', label: 'Équitation', prompt: 'riding a horse in a paddock, hands on the reins' }
+    ],
+    selectedItems: ['running'],
+    template: '{CHARACTER} {ITEM}, {LIGHTING}. Athletic energy, movement captured.',
+    variations: {
+      LIGHTING: ['in early morning light', 'under dramatic stadium lights', 'in golden hour glow', 'in overcast daylight', 'in cool evening light']
+    }
+  },
+  {
+    id: 'locations', name: 'Personnage dans un lieu', icon: '🏙️', mode: 'items', enabled: false, perItem: 1,
+    items: [
+      { id: 'street', label: 'Rue médiévale', prompt: 'in a narrow medieval cobblestone street, timber-framed houses on both sides' },
+      { id: 'desert', label: 'Désert', prompt: 'in a vast orange desert with distant mesas and endless sky' },
+      { id: 'forest', label: 'Forêt brumeuse', prompt: 'in a misty pine forest, tall dark trees fading into fog' },
+      { id: 'mountain', label: 'Sommet de montagne', prompt: 'on a mountain summit, rocky peaks and clouds below' },
+      { id: 'dock', label: 'Quai maritime', prompt: 'on a seaside dock, fishing boats moored, seagulls in the sky' },
+      { id: 'ruins', label: 'Ruines de cathédrale', prompt: 'in the ruins of a gothic cathedral, broken arches and vines' },
+      { id: 'city', label: 'Ville futuriste', prompt: 'in a vast futuristic city, neon and holographic billboards' },
+      { id: 'village', label: 'Place de village', prompt: 'in a quiet village square, old stone fountain at the center' },
+      { id: 'factory', label: 'Usine abandonnée', prompt: 'in an abandoned factory, broken windows and rusting machinery' },
+      { id: 'train', label: 'Train', prompt: 'inside a moving train carriage, window showing passing landscape' },
+      { id: 'river', label: 'Bord de rivière', prompt: 'on a riverbank at dusk, water reflecting the sky' },
+      { id: 'market', label: 'Marché', prompt: 'in a bustling outdoor market, colorful stalls and crowds' },
+      { id: 'library', label: 'Bibliothèque', prompt: 'in a grand old library, towering bookshelves and warm light' },
+      { id: 'space', label: 'Station spatiale', prompt: 'inside a space station, viewing Earth through a porthole' },
+      { id: 'arctic', label: 'Arctique', prompt: 'in an arctic landscape, ice floes and pale blue light' },
+      { id: 'jungle', label: 'Jungle', prompt: 'in a dense jungle, huge leaves and shafts of sunlight' },
+      { id: 'canyon', label: 'Canyon', prompt: 'in a deep canyon, layered red rock walls' },
+      { id: 'beach', label: 'Plage déserte', prompt: 'on a deserted beach, white sand and turquoise water' },
+      { id: 'alley', label: 'Ruelle nocturne', prompt: 'in a narrow night alley, wet cobblestones and dim lamps' },
+      { id: 'rooftop', label: "Toit d'immeuble", prompt: 'on a city rooftop, looking out at the skyline' }
+    ],
+    selectedItems: ['street', 'desert'],
+    template: '{CHARACTER} {ITEM}. {POSE}, {LIGHTING}. The environment is rich and detailed.',
+    variations: {
+      POSE: ['standing still and observing', 'walking slowly', 'lost in thought', 'waiting for something', 'looking out into the distance'],
+      LIGHTING: ['in dawn light', 'in dusk glow', 'in harsh midday sun', 'under the night stars', 'in atmospheric fog']
+    }
+  },
+  {
+    id: 'landscapes', name: 'Paysages sans personnage', icon: '🌄', mode: 'items', enabled: false, perItem: 2,
+    items: [
+      { id: 'hills', label: 'Collines', prompt: 'rolling green hills with a lone tree on the crest' },
+      { id: 'desert', label: 'Désert', prompt: 'a vast desert with distant mesas and heat mirages' },
+      { id: 'forest', label: 'Forêt', prompt: 'a misty pine forest with tall silhouettes' },
+      { id: 'coast', label: 'Côte', prompt: 'a rocky coastline with waves crashing on black stone' },
+      { id: 'snow', label: 'Montagnes enneigées', prompt: 'snow-capped mountain peaks under pale sky' },
+      { id: 'lake', label: 'Lac', prompt: 'a tranquil alpine lake reflecting surrounding peaks' },
+      { id: 'volcano', label: 'Plateau volcanique', prompt: 'a black volcanic plateau with glowing cracks' },
+      { id: 'canyon', label: 'Canyon', prompt: 'a deep canyon carved by an ancient river, layered red rock' },
+      { id: 'field', label: "Champ d'herbe", prompt: 'a field of tall grass swaying in the wind' },
+      { id: 'valley', label: 'Vallée brumeuse', prompt: 'a misty valley with fog rolling between mountains' }
+    ],
+    selectedItems: ['hills', 'desert'],
+    template: 'A landscape painting: {ITEM}, {ATMOSPHERE}, {LIGHTING}. No people, no figures.',
+    variations: {
+      ATMOSPHERE: ['silent and immense', 'dreamlike and hazy', 'desolate and beautiful', 'serene and untouched', 'mysterious and brooding'],
+      LIGHTING: ['in golden hour warmth', 'in blue hour stillness', 'in harsh noon clarity', 'in dawn mist', 'in dusk afterglow']
+    }
+  },
+  {
+    id: 'interiors', name: 'Intérieurs sans personnage', icon: '🚪', mode: 'items', enabled: false, perItem: 2,
+    items: [
+      { id: 'library', label: 'Bibliothèque ancienne', prompt: 'an old library with towering wooden shelves and warm lamplight' },
+      { id: 'workshop', label: 'Atelier', prompt: 'a dusty workshop with scattered tools and half-finished projects' },
+      { id: 'attic', label: 'Grenier', prompt: 'a forgotten attic with cobwebs and antique furniture' },
+      { id: 'station', label: 'Gare', prompt: 'a grand train station hall with vaulted glass roof' },
+      { id: 'chapel', label: 'Chapelle', prompt: 'a small stone chapel with stained glass windows' },
+      { id: 'kitchen', label: 'Cuisine', prompt: 'a rustic kitchen at dawn with copper pots and morning light' },
+      { id: 'study', label: 'Bureau', prompt: 'a cluttered study with books, papers and a single window' },
+      { id: 'classroom', label: 'Classe', prompt: 'an empty classroom with wooden desks and blackboard' }
+    ],
+    selectedItems: ['library'],
+    template: '{ITEM}, {DETAIL}, {LIGHTING}. The space is empty, no people.',
+    variations: {
+      DETAIL: ['with scattered objects', 'with dust suspended in the air', 'with light streaming through a window', 'with long shadows on the floor', 'with signs of recent habitation'],
+      LIGHTING: ['in single window light', 'in candlelight', 'in cool moonlight', 'in warm late-afternoon sun']
+    }
+  },
+  {
+    id: 'animals', name: 'Animaux', icon: '🐺', mode: 'items', enabled: false, perItem: 2,
+    items: [
+      { id: 'cat', label: 'Chat', prompt: 'a solitary cat with tufted fur' },
+      { id: 'dog', label: 'Chien', prompt: 'a noble dog with a proud stance' },
+      { id: 'horse', label: 'Cheval', prompt: 'a lone horse with a flowing mane' },
+      { id: 'wolf', label: 'Loup', prompt: 'a lone wolf with silver-grey fur' },
+      { id: 'fox', label: 'Renard', prompt: 'a red fox with a bushy tail' },
+      { id: 'deer', label: 'Cerf', prompt: 'a stag with tall antlers' },
+      { id: 'crow', label: 'Corbeau', prompt: 'a black crow with glossy feathers' },
+      { id: 'eagle', label: 'Aigle', prompt: 'a majestic eagle in flight' },
+      { id: 'snake', label: 'Serpent', prompt: 'a coiled snake with patterned scales' },
+      { id: 'fish', label: 'Poisson', prompt: 'a luminous fish in dark water' },
+      { id: 'butterfly', label: 'Papillon', prompt: 'a brilliant butterfly with intricate wings' },
+      { id: 'owl', label: 'Hibou', prompt: 'a wise owl with bright eyes' }
+    ],
+    selectedItems: ['cat', 'wolf'],
+    template: '{ITEM}, {CONTEXT}, {LIGHTING}.',
+    variations: {
+      CONTEXT: ['in a misty forest', 'on a city rooftop', 'in an open field', 'on a windowsill', 'at the edge of a road'],
+      LIGHTING: ['in dawn light', 'in dusk glow', 'in overcast grey', 'in moonlight']
+    }
+  },
+  {
+    id: 'vehicles', name: 'Véhicules', icon: '🚗', mode: 'items', enabled: false, perItem: 2,
+    items: [
+      { id: 'vintage', label: 'Voiture vintage', prompt: 'a vintage car with rounded chrome curves' },
+      { id: 'motorcycle', label: 'Moto', prompt: 'a classic motorcycle with a leather saddle' },
+      { id: 'boat', label: 'Bateau de pêche', prompt: 'a small fishing boat with weathered wood' },
+      { id: 'bicycle', label: 'Vélo', prompt: 'an old bicycle with a front basket' },
+      { id: 'truck', label: 'Camion', prompt: 'a rusty pickup truck with dented doors' },
+      { id: 'train', label: 'Locomotive', prompt: 'a steam train locomotive with brass fittings' },
+      { id: 'balloon', label: 'Montgolfière', prompt: 'a hot air balloon with colorful fabric' },
+      { id: 'sailboat', label: 'Voilier', prompt: 'a sailboat with white canvas sails' },
+      { id: 'plane', label: 'Avion', prompt: 'a small propeller plane with struts and fabric wings' },
+      { id: 'submarine', label: 'Sous-marin', prompt: 'a small submarine with a riveted hull' }
+    ],
+    selectedItems: ['vintage'],
+    template: '{ITEM}, {CONTEXT}, {LIGHTING}.',
+    variations: {
+      CONTEXT: ['parked on a deserted road', 'moving through a landscape', 'abandoned in a field', 'silhouetted against the horizon', 'reflected in still water'],
+      LIGHTING: ['in dusk glow', 'in golden hour', 'in overcast grey', 'in moonlit night']
+    }
+  },
+  {
+    id: 'props', name: 'Objets narratifs', icon: '📜', mode: 'items', enabled: false, perItem: 2,
+    items: [
+      { id: 'letter', label: 'Lettre', prompt: 'an old handwritten letter on yellowed paper' },
+      { id: 'watch', label: 'Montre', prompt: 'a brass pocket watch with visible gears' },
+      { id: 'journal', label: 'Journal', prompt: 'a worn leather journal with a ribbon marker' },
+      { id: 'photo', label: 'Photographie', prompt: 'a faded black-and-white photograph with curled corners' },
+      { id: 'key', label: 'Clé', prompt: 'a large antique brass key' },
+      { id: 'compass', label: 'Boussole', prompt: 'a broken compass with a cracked glass face' },
+      { id: 'flower', label: 'Fleur', prompt: 'a single flower in a glass vase' },
+      { id: 'books', label: 'Livres', prompt: 'a stack of old leather-bound books' },
+      { id: 'magnifier', label: 'Loupe', prompt: 'a magnifying glass with a brass handle' },
+      { id: 'radio', label: 'Radio', prompt: 'an old wooden radio with round dials' }
+    ],
+    selectedItems: ['letter'],
+    template: 'Close-up of {ITEM}, {CONTEXT}, {LIGHTING}.',
+    variations: {
+      CONTEXT: ['on a wooden table', 'in an empty room', 'held by unseen hands', 'resting on fabric', 'on dusty ground', 'beside a window'],
+      LIGHTING: ['in warm side light', 'in soft window light', 'in dramatic chiaroscuro', 'in cool moonlight']
+    }
+  }
+];
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  apiKeys: [], keyHealth: [], keyScores: [],
+  image: null, imageName: '',
+  categories: [],
+  results: {},
+  isRunning: false, stopRequested: false, activeRequests: 0,
+  humanLog: [], debugLog: [], plannedTotal: 0
+};
+
+// ============================================================
+// UTILS
+// ============================================================
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nowTime = () => new Date().toLocaleTimeString('fr-FR', { hour12: false });
+const sanitize = t => String(t == null ? '' : t)
+  .replace(/[\u2018\u2019\u201B\u2032\u02BC]/g, "'").replace(/[\u201C\u201D\u201F\u2033]/g, '"')
+  .replace(/\u2013|\u2014/g, '-').replace(/\u2026/g, '...').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/\u00A0|\u202F/g, ' ');
+const uid = () => 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+const deepCopy = o => JSON.parse(JSON.stringify(o));
+
+function human(msg) {
+  state.humanLog.push({ t: nowTime(), m: msg });
+  if (state.humanLog.length > 200) state.humanLog.shift();
+  const el = $('humanLatest'); if (el) el.textContent = msg;
+  renderHuman();
+}
+function renderHuman() {
+  const el = $('humanLog'); if (!el) return;
+  el.innerHTML = state.humanLog.slice(-60).map(e => `<div><span class="t">${e.t}</span> <span class="m">${esc(e.m)}</span></div>`).join('');
+  el.scrollTop = el.scrollHeight;
+}
+function debug(msg, level = 'info') {
+  state.debugLog.push({ t: nowTime(), m: msg, c: level });
+  if (state.debugLog.length > 800) state.debugLog.shift();
+  renderDebug();
+}
+function renderDebug() {
+  const el = $('debugLog'); if (!el) return;
+  el.innerHTML = state.debugLog.slice(-300).map(e => `<div><span class="t">${e.t}</span> <span class="${e.c}">${esc(e.m)}</span></div>`).join('');
+  el.scrollTop = el.scrollHeight;
+}
+function toast(msg, type = 'success', dur = 2800) {
+  const t = $('toast');
+  t.className = `toast ${type} visible`;
+  $('toastText').textContent = msg;
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => { t.className = `toast ${type}`; }, dur);
+}
+function setStatus(txt) {
+  const b = $('statusBar');
+  if (txt) { b.classList.add('visible'); $('statusText').textContent = txt; }
+  else b.classList.remove('visible');
+}
+
+// ============================================================
+// PERSISTANCE
+// ============================================================
+function saveConfig() {
+  try {
+    const cfg = {
+      categories: state.categories.map(c => ({
+        id: c.id,
+        enabled: c.enabled,
+        count: c.count,
+        perItem: c.perItem,
+        selectedItems: c.selectedItems,
+        template: c.template,
+        customItems: c.items.filter(i => i.isCustom)
+      })),
+      styleKey: $('styleSelect').value,
+      styleCustom: $('styleInput').value,
+      charDesc: $('charDescInput').value
+    };
+    localStorage.setItem(STORAGE_CONFIG, JSON.stringify(cfg));
+  } catch (e) { debug('Save config failed: ' + e.message, 'warn'); }
+}
+
+function loadAndApplyConfig() {
+  try {
+    const s = localStorage.getItem(STORAGE_CONFIG);
+    if (!s) return false;
+    const cfg = JSON.parse(s);
+    if (!cfg || !cfg.categories) return false;
+
+    for (const saved of cfg.categories) {
+      const cat = state.categories.find(c => c.id === saved.id);
+      if (!cat) continue;
+      cat.enabled = !!saved.enabled;
+      if (saved.count !== undefined) cat.count = saved.count;
+      if (saved.perItem !== undefined) cat.perItem = saved.perItem;
+      if (Array.isArray(saved.selectedItems)) cat.selectedItems = saved.selectedItems.slice();
+      if (saved.template) cat.template = saved.template;
+      if (Array.isArray(saved.customItems)) {
+        for (const ci of saved.customItems) {
+          if (!cat.items.find(i => i.id === ci.id)) cat.items.push(ci);
+        }
+      }
+    }
+    if (cfg.styleKey && STYLE_PRESETS[cfg.styleKey]) {
+      $('styleSelect').value = cfg.styleKey;
+      $('styleInput').value = STYLE_PRESETS[cfg.styleKey].prompt;
+    } else if (cfg.styleCustom) {
+      $('styleInput').value = cfg.styleCustom;
+    }
+    if (cfg.charDesc) $('charDescInput').value = cfg.charDesc;
+    return true;
+  } catch (e) { debug('Load config failed: ' + e.message, 'warn'); return false; }
+}
+
+// ============================================================
+// KEY SYSTEM
+// ============================================================
+function isValidKey(k) { return typeof k === 'string' && k.startsWith('sk-') && k.length >= 15; }
+
+async function quickPing(key) {
+  try {
+    const res = await fetch(API_BASE + '/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: MODEL_TEXT, messages: [{ role: 'user', content: 'ok' }], max_tokens: 1 })
+    });
+    debug(`Ping HTTP ${res.status}`, res.status === 200 ? 'ok' : 'warn');
+    return res.status !== 401 && res.status !== 403;
+  } catch (e) {
+    debug(`Ping network error: ${e.message}`, 'err');
+    return null;
+  }
+}
+
+async function validateAndSaveKeys(isAutoLoad = false) {
+  const rawText = $('keysInput').value;
+  const raw = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0).filter(l => isValidKey(l));
+  if (raw.length === 0) { if (!isAutoLoad) toast('Aucune clé valide (sk-...)', 'error'); return; }
+
+  $('validateBtn').disabled = true;
+  $('validateBtn').textContent = '⚡ Validation…';
+  $('keyStatus').className = 'status loading';
+  $('keyStatusText').textContent = isAutoLoad ? 'Rechargement…' : 'Test en cours…';
+
+  const results = await Promise.allSettled(raw.map(k => quickPing(k)));
+  state.apiKeys = []; state.keyHealth = []; state.keyScores = [];
+  let networkErr = false, rejected = 0;
+
+  results.forEach((r, i) => {
+    if (r.status === 'fulfilled' && r.value === true) {
+      state.apiKeys.push(raw[i]);
+      state.keyHealth.push({ dead: false, lastSuccess: Date.now(), last429: 0, consecutiveErrors: 0 });
+      state.keyScores.push(100);
+    } else if (r.status === 'fulfilled' && r.value === false) {
+      rejected++; debug(`Clé ${i+1} rejetée (401/403)`, 'err');
+    } else { networkErr = true; }
+  });
+
+  $('validateBtn').disabled = false;
+  $('validateBtn').textContent = '⚡ Valider et sauvegarder';
+
+  if (state.apiKeys.length > 0) {
+    try { localStorage.setItem(STORAGE_KEYS, rawText); } catch (e) {}
+    $('keyBadge').textContent = `${state.apiKeys.length} clé${state.apiKeys.length > 1 ? 's' : ''}`;
+    $('keyStatus').className = 'status ok';
+    $('keyStatusText').textContent = `${state.apiKeys.length} clé(s) prête(s) — sauvegardées`;
+    if (!isAutoLoad) toast(`✓ ${state.apiKeys.length} clé(s) sauvegardée(s)`, 'success');
+    human(`✅ ${state.apiKeys.length} clé(s) prête(s).`);
+  } else {
+    $('keyBadge').textContent = '0 clé';
+    $('keyStatus').className = 'status err';
+    if (networkErr && rejected === 0) {
+      $('keyStatusText').textContent = 'Erreur réseau — vérifiez la connexion';
+      if (!isAutoLoad) toast('Erreur réseau.', 'error');
+    } else if (rejected > 0) {
+      $('keyStatusText').textContent = `${rejected} clé(s) rejetée(s)`;
+      if (!isAutoLoad) toast('Clés rejetées.', 'error');
+    }
+  }
+  renderKeysPanel(); updateUI();
+}
+
+function renderKeysPanel() {
+  $('keysPanel').innerHTML = state.apiKeys.map((k, i) => {
+    const h = state.keyHealth[i];
+    const cls = h && h.consecutiveErrors >= 3 ? 'dead' : (h && h.last429 > 0 ? 'slow' : '');
+    return `<div class="key-chip ${cls}"><span class="dot"></span>key-${i+1} [${k.slice(0,8)}…]</div>`;
+  }).join('');
+}
+
+function getBestKey() {
+  if (state.apiKeys.length === 0) return null;
+  let bestIdx = 0, bestScore = -Infinity;
+  for (let i = 0; i < state.apiKeys.length; i++) {
+    const h = state.keyHealth[i];
+    if (h.dead) continue;
+    let score = state.keyScores[i] || 100;
+    if (h.consecutiveErrors > 0) score -= h.consecutiveErrors * 15;
+    if (h.last429 && Date.now() - h.last429 < 60000) score -= 40;
+    if (Date.now() - h.lastSuccess < 10000) score += 20;
+    if (score > bestScore) { bestScore = score; bestIdx = i; }
+  }
+  return { key: state.apiKeys[bestIdx], idx: bestIdx };
+}
+function markKeySuccess(idx) {
+  state.keyHealth[idx].consecutiveErrors = 0;
+  state.keyHealth[idx].lastSuccess = Date.now();
+  state.keyScores[idx] = Math.min(100, (state.keyScores[idx] || 50) + 5);
+}
+function markKeyFail(idx, is429) {
+  state.keyHealth[idx].consecutiveErrors++;
+  if (is429) state.keyHealth[idx].last429 = Date.now();
+  state.keyScores[idx] = Math.max(0, (state.keyScores[idx] || 50) - 10);
+  if (state.keyHealth[idx].consecutiveErrors >= 5) {
+    state.keyHealth[idx].dead = true;
+    debug(`Clé-${idx+1} morte`, 'err');
+  }
+  renderKeysPanel();
+}
+
+// ============================================================
+// IMAGE
+// ============================================================
+function compressImg(dataUrl, maxSide) {
+  return new Promise(res => {
+    const img = new Image();
+    img.onload = () => {
+      let { width: w, height: h } = img;
+      const s = Math.min(1, maxSide / Math.max(w, h));
+      w = Math.round(w * s); h = Math.round(h * s);
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const x = c.getContext('2d');
+      x.fillStyle = '#fff'; x.fillRect(0, 0, w, h);
+      x.drawImage(img, 0, 0, w, h);
+      res(c.toDataURL('image/jpeg', 0.95));
+    };
+    img.onerror = () => res(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+async function handleImageFile(file) {
+  if (!file || !file.type.startsWith('image/')) return toast('Fichier invalide', 'error');
+  const dataUrl = await new Promise((res) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.readAsDataURL(file);
+  });
+  const compressed = await compressImg(dataUrl, 1600);
+  state.image = compressed;
+  state.imageName = file.name;
+  refreshImageSlot();
+  human(`📷 Image chargée : ${file.name}`);
+}
+
+function refreshImageSlot() {
+  const grid = $('imagesGrid');
+  grid.innerHTML = '';
+  if (state.image) {
+    const slot = document.createElement('div');
+    slot.className = 'slot filled';
+    slot.innerHTML = `<button class="rm" data-rm title="Retirer">✕</button><img src="${state.image}" alt="">`;
+    grid.appendChild(slot);
+    slot.querySelector('[data-rm]').onclick = (e) => {
+      e.stopPropagation();
+      state.image = null; state.imageName = '';
+      refreshImageSlot();
+    };
+  } else {
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    slot.innerHTML = `<input type="file" accept="image/*" id="fileInput"><div class="icon">＋</div><div class="txt">Choisir une image</div>`;
+    grid.appendChild(slot);
+    slot.querySelector('#fileInput').onchange = (e) => {
+      const f = e.target.files[0];
+      if (f) handleImageFile(f);
+      e.target.value = '';
+    };
+  }
+  $('refBadge').textContent = state.image ? '1 image' : '0 image';
+  updateUI();
+}
+
+// ============================================================
+// CONCURRENCE
+// ============================================================
+async function acquireSlot() {
+  while (state.activeRequests >= MAX_CONCURRENT) await sleep(80);
+  state.activeRequests++;
+}
+function releaseSlot() { state.activeRequests = Math.max(0, state.activeRequests - 1); }
+
+// ============================================================
+// API VISION
+// ============================================================
+async function apiVision(system, user, imageUrl) {
+  await acquireSlot();
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (state.stopRequested) { releaseSlot(); throw new Error('Stop'); }
+    const bk = getBestKey();
+    if (!bk) { releaseSlot(); throw new Error('Aucune clé active'); }
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), VISION_TIMEOUT);
+    try {
+      const res = await fetch(API_BASE + '/chat/completions', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${bk.key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: MODEL_TEXT,
+          messages: [
+            { role: 'system', content: sanitize(system) },
+            { role: 'user', content: [{ type: 'text', text: sanitize(user) }, { type: 'image_url', image_url: { url: imageUrl } }] }
+          ],
+          temperature: 0.1, max_tokens: 500
+        }),
+        signal: controller.signal
+      });
+      clearTimeout(tid);
+      if (res.status === 401 || res.status === 403) { markKeyFail(bk.idx, false); await sleep(400); continue; }
+      if (res.status === 429) { markKeyFail(bk.idx, true); await sleep(ADAPTIVE_DELAY * (attempt + 1)); continue; }
+      if (!res.ok) { markKeyFail(bk.idx, false); await sleep(1500 * (attempt + 1)); continue; }
+      markKeySuccess(bk.idx); releaseSlot();
+      const d = await res.json();
+      const content = d.choices?.[0]?.message?.content;
+      if (!content) throw new Error('Réponse vide');
+      return content.trim();
+    } catch (e) {
+      clearTimeout(tid);
+      if (e.name === 'AbortError') { markKeyFail(bk.idx, false); await sleep(800 * (attempt + 1)); continue; }
+      if (attempt === MAX_ATTEMPTS - 1) { releaseSlot(); throw e; }
+      await sleep(800 * (attempt + 1));
+    }
+  }
+  releaseSlot(); throw new Error('Échec vision');
+}
+
+// ============================================================
+// API IMAGE
+// ============================================================
+async function apiImageGenerate(prompt) {
+  await acquireSlot();
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (state.stopRequested) { releaseSlot(); throw new Error('Stop'); }
+    const bk = getBestKey();
+    if (!bk) { releaseSlot(); throw new Error('Aucune clé active'); }
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), IMAGE_TIMEOUT);
+    try {
+      const res = await fetch(API_BASE + '/images/generations', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${bk.key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: MODEL_IMAGE, prompt: sanitize(prompt), size: IMAGE_SIZE, n: 1,
+          extra_body: { response_format: 'url' }
+        }),
+        signal: controller.signal
+      });
+      clearTimeout(tid);
+      if (res.status === 401 || res.status === 403) { markKeyFail(bk.idx, false); await sleep(400); continue; }
+      if (res.status === 429 || res.status === 503) { markKeyFail(bk.idx, true); await sleep(Math.min(20000, ADAPTIVE_DELAY * Math.pow(2, attempt))); continue; }
+      if (!res.ok) {
+        const t = await res.text();
+        markKeyFail(bk.idx, false);
+        if (attempt === MAX_ATTEMPTS - 1) { releaseSlot(); throw new Error(`HTTP ${res.status} ${t.slice(0,100)}`); }
+        await sleep(2000 * (attempt + 1)); continue;
+      }
+      markKeySuccess(bk.idx);
+      const d = await res.json();
+      const item = d.data?.[0];
+      if (item?.url) { releaseSlot(); return item.url; }
+      if (item?.b64_json) { releaseSlot(); return `data:image/png;base64,${item.b64_json}`; }
+      markKeyFail(bk.idx, false); await sleep(1500);
+    } catch (e) {
+      clearTimeout(tid);
+      if (e.name === 'AbortError') { markKeyFail(bk.idx, true); await sleep(3000 * (attempt + 1)); continue; }
+      if (attempt === MAX_ATTEMPTS - 1) { releaseSlot(); throw e; }
+      await sleep(2000 * (attempt + 1));
+    }
+  }
+  releaseSlot(); throw new Error('Échec génération');
+}
+
+// ============================================================
+// INIT CATEGORIES
+// ============================================================
+function initCategories() {
+  state.categories = DEFAULT_CATEGORIES.map(c => ({
+    ...deepCopy(c),
+    enabled: c.enabled === true,
+    count: c.count || 5,
+    perItem: c.perItem || 1,
+    selectedItems: (c.selectedItems || []).slice(),
+    isCustom: false
+  }));
+}
+
+// ============================================================
+// RENDER CATEGORIES AVEC LISTES D'ITEMS
+// ============================================================
+function renderCategories() {
+  const root = $('categoriesList');
+  root.innerHTML = '';
+
+  for (const cat of state.categories) {
+    const div = document.createElement('div');
+    div.className = 'category' + (cat.enabled ? ' enabled' : '');
+    div.dataset.id = cat.id;
+
+    let itemsSection = '';
+    let countSection = '';
+
+    if (cat.mode === 'items') {
+      const items = cat.items.map(item => {
+        const checked = cat.selectedItems.includes(item.id);
+        const rmBtn = item.isCustom ? `<button class="item-rm" data-rmitem="${item.id}" title="Supprimer">✕</button>` : '';
+        return `<label class="item-check${checked ? ' on' : ''}"><input type="checkbox" ${checked ? 'checked' : ''} data-item="${item.id}"><span>${esc(item.label)}</span>${rmBtn}</label>`;
+      }).join('');
+
+      itemsSection = `
+        <div class="items-section">
+          <div class="items-label">Éléments (${cat.selectedItems.length}/${cat.items.length}) :</div>
+          <div class="items-grid">${items}</div>
+          <button class="add-item-btn" data-additem>＋ Ajouter un élément personnalisé</button>
+        </div>
+      `;
+      countSection = `<input type="number" class="cat-count" value="${cat.perItem}" min="1" max="20" data-count><span>img/élément</span>`;
+    } else {
+      countSection = `<input type="number" class="cat-count" value="${cat.count}" min="1" max="100" data-count><span>images</span>`;
+    }
+
+    const comboCount = getCombinationCount(cat);
+    const totalImgs = computeTotalImages(cat);
+
+    div.innerHTML = `
+      <div class="cat-head">
+        <label class="cat-check">
+          <input type="checkbox" ${cat.enabled ? 'checked' : ''} data-toggle>
+          <span class="cat-icon">${cat.icon}</span>
+          <span class="cat-name">${esc(cat.name)}</span>
+        </label>
+        <div class="cat-count-wrap">${countSection}</div>
+      </div>
+      ${itemsSection}
+      <textarea class="cat-desc" data-template>${esc(cat.template)}</textarea>
+      <div class="cat-meta">
+        <span class="combos">${comboCount.toLocaleString('fr-FR')} combinaisons</span>
+        <span class="total-badge">→ ${totalImgs} image${totalImgs > 1 ? 's' : ''}</span>
+        <button class="cat-preview-btn" data-preview>👁 Prompt exemple</button>
+      </div>
+      <div class="cat-preview" data-previewbox></div>
+    `;
+
+    root.appendChild(div);
+
+    // Bind events
+    div.querySelector('[data-toggle]').onchange = e => {
+      cat.enabled = e.target.checked;
+      div.classList.toggle('enabled', cat.enabled);
+      updatePlannerSummary(); updateUI(); saveConfig();
+    };
+
+    div.querySelector('[data-count]').oninput = e => {
+      const max = cat.mode === 'items' ? 20 : 100;
+      const v = Math.max(1, Math.min(max, parseInt(e.target.value) || 1));
+      if (cat.mode === 'items') cat.perItem = v; else cat.count = v;
+      div.querySelector('.total-badge').textContent = `→ ${computeTotalImages(cat)} image${computeTotalImages(cat) > 1 ? 's' : ''}`;
+      updatePlannerSummary(); saveConfig();
+    };
+
+    div.querySelector('[data-template]').oninput = e => {
+      cat.template = e.target.value;
+      div.querySelector('.combos').textContent = `${getCombinationCount(cat).toLocaleString('fr-FR')} combinaisons`;
+      saveConfig();
+    };
+
+    div.querySelectorAll('[data-item]').forEach(input => {
+      input.onchange = e => {
+        const id = e.target.dataset.item;
+        const label = input.closest('.item-check');
+        if (e.target.checked) {
+          if (!cat.selectedItems.includes(id)) cat.selectedItems.push(id);
+          label.classList.add('on');
+        } else {
+          cat.selectedItems = cat.selectedItems.filter(x => x !== id);
+          label.classList.remove('on');
+        }
+        div.querySelector('.items-label').textContent = `Éléments (${cat.selectedItems.length}/${cat.items.length}) :`;
+        div.querySelector('.total-badge').textContent = `→ ${computeTotalImages(cat)} image${computeTotalImages(cat) > 1 ? 's' : ''}`;
+        updatePlannerSummary(); saveConfig();
+      };
+    });
+
+    div.querySelectorAll('[data-rmitem]').forEach(btn => {
+      btn.onclick = e => {
+        e.preventDefault(); e.stopPropagation();
+        const id = btn.dataset.rmitem;
+        if (!confirm('Supprimer cet élément ?')) return;
+        cat.items = cat.items.filter(i => i.id !== id);
+        cat.selectedItems = cat.selectedItems.filter(x => x !== id);
+        renderCategories(); saveConfig();
+      };
+    });
+
+    const addBtn = div.querySelector('[data-additem]');
+    if (addBtn) {
+      addBtn.onclick = () => {
+        const label = prompt("Label de l'élément (ex: Boulanger) :");
+        if (!label || !label.trim()) return;
+        const promptText = prompt("Description pour l'image (en anglais de préférence) :", label);
+        if (!promptText || !promptText.trim()) return;
+        const id = uid();
+        cat.items.push({ id, label: label.trim(), prompt: promptText.trim(), isCustom: true });
+        cat.selectedItems.push(id);
+        renderCategories(); saveConfig();
+      };
+    }
+
+    div.querySelector('[data-preview]').onclick = () => {
+      const box = div.querySelector('[data-previewbox]');
+      if (box.classList.contains('visible')) { box.classList.remove('visible'); return; }
+      const charDesc = $('charDescInput').value.trim() || 'the person described';
+      box.textContent = buildPreviewPrompt(cat, charDesc);
+      box.classList.add('visible');
+    };
+  }
+
+  updatePlannerSummary();
+}
+
+// ============================================================
+// COMPTAGE
+// ============================================================
+function getCombinationCount(cat) {
+  if (!cat.template) return 0;
+  const matches = [...cat.template.matchAll(/{([A-Z_0-9]+)}/g)];
+  const slots = [...new Set(matches.map(m => m[1]))].filter(s => s !== 'CHARACTER' && s !== 'ITEM' && cat.variations[s]);
+  let count = 1;
+  for (const slot of slots) count *= cat.variations[slot].length;
+  if (cat.mode === 'items' && cat.template.includes('{ITEM}')) {
+    count *= Math.max(1, cat.selectedItems.length);
+  }
+  return count;
+}
+
+function computeTotalImages(cat) {
+  if (!cat.enabled) return 0;
+  if (cat.mode === 'items') {
+    return cat.selectedItems.length * (cat.perItem || 1);
+  }
+  return cat.count || 0;
+}
+
+function updatePlannerSummary() {
+  const active = state.categories.filter(c => c.enabled);
+  const total = active.reduce((s, c) => s + computeTotalImages(c), 0);
+  state.plannedTotal = total;
+  const el = $('plannerSummary');
+  el.innerHTML = active.length === 0
+    ? 'Aucune catégorie active.'
+    : `<strong>${active.length}</strong> catégorie(s) active(s) · <strong>${total}</strong> image(s) au total`;
+  $('plannerBadge').textContent = `${total} image${total > 1 ? 's' : ''}`;
+  updateUI();
+}
+
+// ============================================================
+// PROMPT BUILDING
+// ============================================================
+function buildPrompt(cat, item, index, charDesc) {
+  let result = cat.template;
+
+  // CHARACTER
+  result = result.replace(/{CHARACTER}/g, charDesc || 'the person');
+
+  // ITEM
+  if (item && result.includes('{ITEM}')) {
+    result = result.replace(/{ITEM}/g, item.prompt);
+  }
+
+  // Variations
+  const matches = [...cat.template.matchAll(/{([A-Z_0-9]+)}/g)];
+  const slots = [...new Set(matches.map(m => m[1]))].filter(s => s !== 'CHARACTER' && s !== 'ITEM' && cat.variations[s]);
+
+  const multipliers = {};
+  let mult = 1;
+  for (const slot of slots) {
+    multipliers[slot] = mult;
+    mult *= cat.variations[slot].length;
+  }
+  for (const slot of slots) {
+    const v = cat.variations[slot][Math.floor(index / multipliers[slot]) % cat.variations[slot].length];
+    result = result.replace(new RegExp('{' + slot + '}', 'g'), v);
+  }
+
+  // Nettoyage
+  result = result.replace(/{[A-Z_0-9]+}/g, '');
+  result = result.replace(/,\s*,/g, ',').replace(/\s+/g, ' ').trim();
+
+  const style = $('styleInput').value.trim() || STYLE_PRESETS[DEFAULT_STYLE_KEY].prompt;
+  return `${style} ${result}`;
+}
+
+function buildPreviewPrompt(cat, charDesc) {
+  let item = null;
+  if (cat.mode === 'items' && cat.selectedItems.length > 0) {
+    const firstId = cat.selectedItems[0];
+    item = cat.items.find(i => i.id === firstId) || null;
+  }
+  return buildPrompt(cat, item, 0, charDesc);
+}
+
+// ============================================================
+// EXTRACTION FORENSIQUE
+// ============================================================
+async function extractCharacter() {
+  if (!state.image) return toast('Aucune image', 'warn');
+
+  $('analyzeBtn').disabled = true;
+  $('analyzeBtn').textContent = '🔍 Analyse forensique…';
+  human('🔍 Analyse du personnage…');
+  setStatus('Analyse forensique…');
+  $('analyzeStatus').className = 'status loading';
+  $('analyzeStatusText').textContent = 'Analyse…';
+
+  try {
+    const desc = await apiVision(VISION_SYS, VISION_USER, state.image);
+    if (!desc || desc.length < 30) throw new Error('Description trop courte');
+
+    let clean = desc.replace(/^["']|["']$/g, '').replace(/\s+/g, ' ').trim();
+    clean = clean.replace(/^(The person is|The subject is|This is|Description:)\s*/i, '');
+    $('charDescInput').value = clean;
+    saveConfig();
+
+    $('analyzeStatus').className = 'status ok';
+    $('analyzeStatusText').textContent = '✓ Personnage analysé';
+    human(`✅ Analysé (${clean.split(' ').length} mots).`);
+    toast('Analyse terminée', 'success');
+    updateUI();
+  } catch (e) {
+    debug('Erreur analyse : ' + e.message, 'err');
+    $('analyzeStatus').className = 'status err';
+    $('analyzeStatusText').textContent = 'Échec — écrivez à la main';
+    toast('Échec : ' + e.message, 'error');
+  } finally {
+    $('analyzeBtn').disabled = false;
+    $('analyzeBtn').textContent = '🔍 Analyser le personnage en détail';
+    setStatus(null);
+    updateUI();
+  }
+}
+
+// ============================================================
+// GÉNÉRATION
+// ============================================================
+async function generateLibrary() {
+  if (state.isRunning) return;
+
+  const charDesc = $('charDescInput').value.trim();
+  if (!charDesc) return toast('Description du personnage requise', 'error');
+
+  const active = state.categories.filter(c => c.enabled && computeTotalImages(c) > 0);
+  if (active.length === 0) return toast('Activez au moins une catégorie', 'error');
+
+  state.isRunning = true;
+  state.stopRequested = false;
+  $('generateBtn').disabled = true;
+  $('stopBtn').classList.remove('hidden');
+  $('resultsCard').classList.remove('hidden');
+
+  // Construire toutes les tâches
+  const tasks = [];
+  state.results = {};
+
+  for (const cat of active) {
+    state.results[cat.id] = [];
+
+    if (cat.mode === 'items') {
+      const selected = cat.items.filter(i => cat.selectedItems.includes(i.id));
+      for (const item of selected) {
+        for (let i = 0; i < cat.perItem; i++) {
+          const prompt = buildPrompt(cat, item, i, charDesc);
+          const task = {
+            uid: uid(),
+            catId: cat.id, catName: cat.name, catIcon: cat.icon,
+            itemLabel: item.label, index: i, prompt, status: 'pending', url: null
+          };
+          state.results[cat.id].push(task);
+          tasks.push(task);
+        }
+      }
+    } else {
+      for (let i = 0; i < cat.count; i++) {
+        const prompt = buildPrompt(cat, null, i, charDesc);
+        const task = {
+          uid: uid(),
+          catId: cat.id, catName: cat.name, catIcon: cat.icon,
+          itemLabel: null, index: i, prompt, status: 'pending', url: null
+        };
+        state.results[cat.id].push(task);
+        tasks.push(task);
+      }
+    }
+  }
+
+  const total = tasks.length;
+  human(`🎬 Génération de ${total} images…`);
+  debug(`${total} tâches · ${WORKER_COUNT} workers`, 'api');
+
+  renderResults(active);
+  updateProgress(total);
+
+  let cursor = 0;
+  const workers = Array.from({ length: WORKER_COUNT }, () => (async function worker() {
+    while (cursor < tasks.length) {
+      if (state.stopRequested) return;
+      const task = tasks[cursor++];
+      updateResultCard(task, 'generating');
+      try {
+        const url = await apiImageGenerate(task.prompt);
+        task.url = url; task.status = 'done';
+        updateResultCard(task, 'done');
+        debug(`✓ ${task.catName}${task.itemLabel ? ' / ' + task.itemLabel : ''} #${task.index + 1}`, 'ok');
+      } catch (e) {
+        task.status = 'error'; task.error = e.message;
+        updateResultCard(task, 'error');
+        debug(`✗ ${task.catName} #${task.index + 1} : ${e.message}`, 'err');
+      }
+      updateProgress(total);
+    }
+  })());
+
+  await Promise.all(workers);
+
+  state.isRunning = false;
+  $('generateBtn').disabled = false;
+  $('stopBtn').classList.add('hidden');
+
+  const done = tasks.filter(t => t.status === 'done').length;
+  const failed = tasks.filter(t => t.status === 'error').length;
+  setStatus(null);
+  human(`🏁 ${done}/${total} réussies · ${failed} échouées.`);
+  toast(`Bibliothèque : ${done}/${total}`, done === total ? 'success' : 'warn', 4000);
+}
+
+function renderResults(activeCategories) {
+  const root = $('resultsRoot');
+  root.innerHTML = '';
+
+  for (const cat of activeCategories) {
+    const section = document.createElement('div');
+    section.className = 'result-category';
+    const taskCount = state.results[cat.id].length;
+    section.innerHTML = `<h3><span>${cat.icon} ${esc(cat.name)}</span><span class="cat-stat" id="rstat-${cat.id}">0/${taskCount}</span></h3>`;
+    const grid = document.createElement('div');
+    grid.className = 'result-grid';
+    grid.id = 'rgrid-' + cat.id;
+    section.appendChild(grid);
+    root.appendChild(section);
+
+    for (const task of state.results[cat.id]) {
+      const card = document.createElement('div');
+      card.className = 'result-card pending';
+      card.id = `rcard-${task.uid}`;
+      const label = task.itemLabel ? `${task.itemLabel} #${task.index + 1}` : `#${task.index + 1}`;
+      card.innerHTML = `
+        <div class="result-img"><div class="load"><div class="spin"></div><div>${cat.icon} ${esc(label)}</div></div></div>
+        <div class="result-meta"><span>${esc(label)}</span><span>en attente</span></div>
+      `;
+      grid.appendChild(card);
+    }
+  }
+}
+
+function updateResultCard(task, status) {
+  const card = $(`rcard-${task.uid}`);
+  if (!card) return;
+  card.className = 'result-card ' + status;
+  const label = task.itemLabel ? `${task.itemLabel} #${task.index + 1}` : `#${task.index + 1}`;
+
+  if (status === 'generating') {
+    card.querySelector('.result-img').innerHTML = `<div class="load"><div class="spin"></div><div>${task.catIcon} ${esc(label)}<br>génération…</div></div>`;
+    card.querySelector('.result-meta').innerHTML = `<span>${esc(label)}</span><span>…</span>`;
+  } else if (status === 'done') {
+    card.querySelector('.result-img').innerHTML = `<img src="${task.url}" loading="lazy" alt="">`;
+    card.querySelector('.result-meta').innerHTML = `<span>${esc(label)}</span><a href="${task.url}" target="_blank" rel="noopener" download>⬇</a>`;
+    const stat = $(`rstat-${task.catId}`);
+    if (stat) {
+      const done = state.results[task.catId].filter(t => t.status === 'done').length;
+      stat.textContent = `${done}/${state.results[task.catId].length}`;
+    }
+  } else if (status === 'error') {
+    card.querySelector('.result-img').innerHTML = `<div class="err">✕<small>${esc(task.error || '').slice(0, 60)}</small></div>`;
+    card.querySelector('.result-meta').innerHTML = `<span>${esc(label)}</span><span style="color:#f87171">échec</span>`;
+  }
+}
+
+function updateProgress(total) {
+  const all = Object.values(state.results).flat();
+  const done = all.filter(t => t.status === 'done').length;
+  const failed = all.filter(t => t.status === 'error').length;
+  const pct = total > 0 ? Math.round(((done + failed) / total) * 100) : 0;
+  const fill = $('progressFill');
+  fill.style.width = pct + '%';
+  if (pct === 100) fill.classList.add('done');
+  $('progressPct').textContent = pct + '%';
+  $('resultsBadge').textContent = `${done} / ${total}`;
+  if (done > 0 && done % 10 === 0) human(`📽️ ${done}/${total} images…`);
+}
+
+// ============================================================
+// UI
+// ============================================================
+function updateUI() {
+  const hasKeys = state.apiKeys.length > 0;
+  const hasChar = $('charDescInput').value.trim().length > 0;
+  const hasActiveCats = state.categories.some(c => c.enabled && computeTotalImages(c) > 0);
+  $('analyzeBtn').disabled = !hasKeys || !state.image || state.isRunning;
+  $('generateBtn').disabled = !hasKeys || !hasChar || !hasActiveCats || state.isRunning;
+}
+
+function initStyleSelect() {
+  const sel = $('styleSelect');
+  sel.innerHTML = Object.entries(STYLE_PRESETS).map(([k, v]) => `<option value="${k}">${esc(v.label)}</option>`).join('');
+  sel.value = DEFAULT_STYLE_KEY;
+  $('styleInput').value = STYLE_PRESETS[DEFAULT_STYLE_KEY].prompt;
+
+  sel.onchange = (e) => {
+    if (STYLE_PRESETS[e.target.value]) {
+      $('styleInput').value = STYLE_PRESETS[e.target.value].prompt;
+      human(`🎨 ${STYLE_PRESETS[e.target.value].label}`);
+      saveConfig();
+    }
+  };
+}
+
+// ============================================================
+// BINDINGS
+// ============================================================
+function bind() {
+  $('validateBtn').onclick = () => validateAndSaveKeys(false);
+
+  $('clearKeysBtn').onclick = () => {
+    try { localStorage.removeItem(STORAGE_KEYS); } catch (e) {}
+    state.apiKeys = []; state.keyHealth = []; state.keyScores = [];
+    $('keysInput').value = '';
+    $('keyBadge').textContent = '0 clé';
+    $('keyStatus').className = 'status';
+    $('keyStatusText').textContent = 'Aucune clé enregistrée';
+    $('keysPanel').innerHTML = '';
+    updateUI();
+    human('🗑 Clés effacées.');
+  };
+
+  $('analyzeBtn').onclick = extractCharacter;
+  $('charDescInput').addEventListener('input', () => { updateUI(); saveConfig(); });
+
+  $('resetPlannerBtn').onclick = () => {
+    if (!confirm('Réinitialiser toutes les catégories et éléments cochés ?')) return;
+    initCategories();
+    renderCategories();
+    saveConfig();
+    human('↺ Plan réinitialisé.');
+  };
+
+  $('generateBtn').onclick = generateLibrary;
+  $('stopBtn').onclick = () => {
+    state.stopRequested = true;
+    human('⏹ Arrêt demandé…');
+    toast('Arrêt en cours…', 'warn');
+  };
+
+  // Console
+  const handle = $('panelHandle');
+  const content = $('panelContent');
+  let open = false;
+  handle.onclick = (e) => {
+    if (e.target.tagName === 'BUTTON') return;
+    open = !open;
+    content.classList.toggle('hidden', !open);
+    $('panelToggle').textContent = (open ? '▲' : '▼') + ' CONSOLE';
+  };
+  $('copyConsoleBtn').onclick = () => {
+    const text = state.debugLog.map(e => `[${e.t}] ${e.m}`).join('\n');
+    navigator.clipboard.writeText(text).then(() => toast('Console copiée'));
+  };
+  $('clearConsoleBtn').onclick = () => {
+    state.debugLog = []; state.humanLog = [];
+    renderDebug(); renderHuman();
+  };
+
+  // Init
+  initStyleSelect();
+  initCategories();
+  const loaded = loadAndApplyConfig();
+  renderCategories();
+  refreshImageSlot();
+  updateUI();
+
+  // Save style on manual edit
+  $('styleInput').addEventListener('input', () => saveConfig());
+
+  // Auto-load keys
+  let savedKeys = null;
+  try { savedKeys = localStorage.getItem(STORAGE_KEYS); } catch (e) {}
+  if (savedKeys && savedKeys.trim()) {
+    $('keysInput').value = savedKeys;
+    human('🔑 Rechargement des clés sauvegardées…');
+    setTimeout(() => validateAndSaveKeys(true), 400);
+  } else {
+    human(loaded ? '✦ Configuration restaurée.' : '✦ Prêt.');
+  }
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+else bind();
+</script>
+</body>
+</html>
