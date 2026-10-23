@@ -1,0 +1,2607 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Moebius Film Library — v8</title>
+<style>
+:root{
+  --bg:#fdf6ec;--bg2:#fffaf2;--bg3:#f5ead7;--bg4:#efe2cb;
+  --ink:#3b2f26;--ink2:#6b5b4a;--ink3:#9a8875;
+  --line:#e6d5bd;--line2:#d4bfa3;
+  --accent:#c98a6b;--accent2:#8fbcb3;--accent3:#d4a56a;--accent4:#a87f5c;
+  --ok:#7fb069;--err:#d97a6c;--warn:#e0b866;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding:1rem 1rem 14rem;font-size:14.5px;line-height:1.55}
+.wrap{max-width:1500px;margin:0 auto}
+header{text-align:center;padding:1.2rem 0;border-bottom:1px solid var(--line);margin-bottom:1rem}
+h1{font-family:Georgia,serif;font-size:2rem;font-weight:400;letter-spacing:.01em;margin-bottom:.35rem;background:linear-gradient(135deg,#8fbcb3 0%,#d4a56a 55%,#c98a6b 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1}
+.sub{font-family:Georgia,serif;font-style:italic;font-size:.85rem;color:var(--ink3)}
+.kata{font-size:.65rem;letter-spacing:.4em;color:var(--accent2);opacity:.85;text-transform:uppercase;margin-bottom:.4rem;font-weight:600}
+.topnav{display:flex;gap:.35rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem;padding:.35rem;background:var(--bg2);border:1px solid var(--line);border-radius:8px;box-shadow:0 1px 3px rgba(60,40,20,.04)}
+.topnav .tab{padding:.55rem 1rem;font-size:.72rem;font-family:Georgia,serif;cursor:pointer;border:1px solid transparent;border-radius:5px;background:transparent;color:var(--ink2);text-transform:uppercase;letter-spacing:.12em;font-weight:600;transition:all .15s}
+.topnav .tab:hover{color:var(--accent);background:rgba(201,138,107,.06)}
+.topnav .tab.active{border-color:var(--accent);color:var(--accent);background:rgba(201,138,107,.1)}
+.banner{background:linear-gradient(135deg,rgba(143,188,179,.12),rgba(212,165,106,.08));border:1px solid var(--line);border-left:3px solid var(--accent2);border-radius:6px;padding:.85rem 1rem;font-size:.78rem;color:var(--ink2);margin-bottom:1rem;line-height:1.6;font-family:Georgia,serif}
+.banner strong{color:var(--ink)}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:8px;margin-bottom:1rem;overflow:hidden;box-shadow:0 1px 3px rgba(60,40,20,.04)}
+.card-head{padding:.85rem 1.1rem;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:.72rem;text-transform:uppercase;letter-spacing:.15em;color:var(--ink);font-weight:700;font-family:Georgia,serif;flex-wrap:wrap;gap:.5rem;background:linear-gradient(180deg,var(--bg2),var(--bg3))}
+.card-head .badge{font-size:.6rem;padding:.15rem .55rem;border:1px solid var(--accent2);color:var(--accent4);border-radius:3px;letter-spacing:.1em;background:rgba(143,188,179,.12);text-transform:none;font-weight:600}
+.card-body{padding:1rem 1.1rem}
+textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:.7rem .85rem;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:.8rem;color:var(--ink);outline:none;min-height:80px;resize:vertical;line-height:1.55;transition:border-color .15s,box-shadow .15s}
+textarea:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(143,188,179,.18);background:var(--bg2)}
+input[type="number"],input[type="text"],input[type="email"],input[type="password"]{background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:.55rem .7rem;color:var(--ink);font-size:.82rem;font-family:ui-monospace,monospace;outline:none;width:100%;transition:border-color .15s,box-shadow .15s}
+input:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(143,188,179,.18);background:var(--bg2)}
+select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:.65rem .85rem;color:var(--ink);font-size:.85rem;font-family:Georgia,serif;outline:none;cursor:pointer;margin-bottom:.5rem;transition:border-color .15s}
+select:focus{border-color:var(--accent2)}
+select option,select optgroup{background:var(--bg2);color:var(--ink)}
+.btn{padding:.7rem 1rem;border-radius:6px;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:1px solid;transition:all .15s;font-family:Georgia,serif}
+.btn-amber{background:linear-gradient(135deg,rgba(212,165,106,.2),rgba(201,138,107,.15));border-color:var(--accent3);color:var(--accent4)}
+.btn-amber:hover:not(:disabled){background:rgba(212,165,106,.32);transform:translateY(-1px)}
+.btn-amber:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.btn-slate{background:var(--bg3);border-color:var(--line2);color:var(--ink2);font-size:.68rem;padding:.5rem .75rem;font-family:-apple-system,sans-serif;letter-spacing:.04em}
+.btn-slate:hover:not(:disabled){color:var(--accent4);border-color:var(--accent3);background:var(--bg4)}
+.btn-slate:disabled{opacity:.35;cursor:not-allowed}
+.btn-mega{background:linear-gradient(135deg,#8fbcb3,#d4a56a,#c98a6b);border:none;color:#fffaf2;padding:1rem;font-size:.85rem;letter-spacing:.15em;border-radius:7px;box-shadow:0 4px 16px rgba(201,138,107,.35);font-family:Georgia,serif;font-weight:700;width:100%;text-shadow:0 1px 2px rgba(0,0,0,.08)}
+.btn-mega:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 22px rgba(201,138,107,.5)}
+.btn-mega:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-danger{background:rgba(217,122,108,.12);border:1px solid var(--err);color:#b85a4a;padding:.6rem 1rem;border-radius:6px;font-size:.7rem;cursor:pointer;font-family:Georgia,serif;letter-spacing:.06em;font-weight:600}
+.btn-danger:hover{background:rgba(217,122,108,.22)}
+.row{display:flex;gap:.5rem;margin-top:.6rem;flex-wrap:wrap}
+.row .btn{flex:1;min-width:100px}
+.row-inline{display:flex;gap:.5rem;align-items:stretch;margin-top:.6rem;flex-wrap:wrap}
+.row-inline input{flex:1;min-width:180px}
+.row-inline .btn{flex:0 0 auto}
+.status{display:flex;align-items:center;gap:.5rem;padding:.55rem .8rem;background:var(--bg3);border:1px solid var(--line);border-radius:5px;font-size:.74rem;color:var(--ink2);margin-top:.5rem}
+.status.ok{background:rgba(127,176,105,.12);border-color:var(--ok);color:#4f7a3a}
+.status.err{background:rgba(217,122,108,.12);border-color:var(--err);color:#b85a4a}
+.status.loading{background:rgba(212,165,106,.12);border-color:var(--accent3);color:var(--accent4)}
+.status .dot{width:7px;height:7px;border-radius:50%;background:var(--ink3);flex-shrink:0}
+.status.ok .dot{background:var(--ok);box-shadow:0 0 6px var(--ok)}
+.status.err .dot{background:var(--err)}
+.status.loading .dot{background:var(--accent3);animation:pulse 1s infinite}
+@keyframes pulse{0%{opacity:1}50%{opacity:.3}100%{opacity:1}}
+.hint{font-size:.72rem;color:var(--ink3);margin-top:.45rem;font-family:Georgia,serif;font-style:italic;line-height:1.5}
+.mode-tabs{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.85rem;padding:.25rem;background:var(--bg3);border-radius:6px;border:1px solid var(--line)}
+.mode-tab{padding:.5rem .9rem;font-size:.72rem;font-family:Georgia,serif;cursor:pointer;border:1px solid transparent;border-radius:4px;background:transparent;color:var(--ink2);letter-spacing:.06em;font-weight:600;transition:all .15s}
+.mode-tab:hover{color:var(--accent4);background:rgba(255,255,255,.4)}
+.mode-tab.active{background:var(--bg2);color:var(--accent4);border-color:var(--accent3);box-shadow:0 1px 2px rgba(60,40,20,.06)}
+.images-grid{display:grid;grid-template-columns:minmax(0,280px);justify-content:center;margin-bottom:.6rem}
+.slot{border:2px dashed var(--line2);border-radius:8px;padding:.5rem;text-align:center;cursor:pointer;position:relative;transition:all .15s;background:var(--bg);min-height:180px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.4rem}
+.slot:hover{border-color:var(--accent2);background:rgba(143,188,179,.06)}
+.slot.filled{border-style:solid;border-color:var(--accent3);padding:.3rem}
+.slot input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.slot .icon{font-size:1.8rem;opacity:.55;color:var(--accent2)}
+.slot .txt{font-size:.78rem;color:var(--ink2);font-family:Georgia,serif}
+.slot img{max-width:100%;max-height:260px;border-radius:5px;display:block;object-fit:contain}
+.slot .rm{position:absolute;top:6px;right:6px;background:rgba(217,122,108,.92);color:#fff;border:none;border-radius:4px;width:26px;height:26px;font-size:.75rem;cursor:pointer;z-index:2;font-weight:700}
+.keys-panel{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
+.key-chip{font-size:.62rem;padding:.25rem .55rem;border:1px solid var(--line2);border-radius:4px;background:var(--bg);color:var(--ink2);font-family:ui-monospace,monospace;display:flex;align-items:center;gap:.35rem}
+.key-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.key-chip.slow .dot{background:var(--warn)}
+.key-chip.dead .dot{background:var(--err)}
+.categories-list{display:flex;flex-direction:column;gap:.7rem;margin-top:.5rem}
+.category{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:.8rem;transition:border-color .15s,box-shadow .15s}
+.category.enabled{border-color:var(--accent2);box-shadow:0 0 0 1px rgba(143,188,179,.15)}
+.category.enabled:hover{border-color:var(--accent3)}
+.cat-head{display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap}
+.cat-check{display:flex;align-items:center;gap:.55rem;cursor:pointer;flex:1;min-width:180px}
+.cat-check input{width:17px;height:17px;accent-color:var(--accent2);cursor:pointer;flex-shrink:0}
+.cat-icon{font-size:1.15rem;flex-shrink:0}
+.cat-name{font-family:Georgia,serif;font-size:.9rem;color:var(--ink);font-weight:600}
+.cat-count-wrap{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--ink2);font-family:ui-monospace,monospace;flex-wrap:wrap}
+.cat-count{width:65px;text-align:center}
+.items-section{margin-top:.6rem;padding:.6rem;background:var(--bg3);border:1px solid var(--line);border-radius:5px}
+.items-label{font-size:.68rem;color:var(--ink2);margin-bottom:.45rem;font-family:ui-monospace,monospace;font-weight:600}
+.items-grid{display:flex;flex-wrap:wrap;gap:.35rem}
+.item-check{display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .55rem;background:var(--bg2);border:1px solid var(--line);border-radius:4px;cursor:pointer;font-size:.72rem;color:var(--ink2);transition:all .15s;font-weight:500}
+.item-check:hover{border-color:var(--accent2);color:var(--ink)}
+.item-check input{width:13px;height:13px;accent-color:var(--accent2);cursor:pointer;flex-shrink:0}
+.item-check.on{border-color:var(--accent2);background:rgba(143,188,179,.15);color:var(--ink);font-weight:600}
+.item-rm{background:transparent;border:none;color:var(--ink3);cursor:pointer;font-size:.72rem;padding:0;margin-left:.15rem}
+.item-rm:hover{color:var(--err)}
+.add-item-btn{background:transparent;border:1px dashed var(--line2);color:var(--ink2);font-size:.68rem;padding:.35rem .65rem;border-radius:4px;cursor:pointer;margin-top:.5rem;font-family:-apple-system,sans-serif}
+.add-item-btn:hover{color:var(--accent4);border-color:var(--accent3);background:var(--bg2)}
+.cat-desc{margin-top:.6rem;min-height:55px;font-size:.74rem}
+.cat-meta{display:flex;justify-content:space-between;align-items:center;margin-top:.45rem;font-size:.68rem;color:var(--ink2);font-family:ui-monospace,monospace;gap:.5rem;flex-wrap:wrap}
+.cat-meta .combos{color:var(--accent2);font-weight:600}
+.cat-meta .total-badge{color:var(--accent4);font-weight:700}
+.cat-preview-btn{background:var(--bg2);border:1px solid var(--line2);color:var(--ink2);font-size:.62rem;padding:.2rem .45rem;border-radius:3px;cursor:pointer;font-family:ui-monospace,monospace}
+.cat-preview-btn:hover{color:var(--accent4);border-color:var(--accent3)}
+.cat-preview{display:none;margin-top:.5rem;background:var(--bg2);border:1px solid var(--line);border-radius:5px;padding:.6rem;font-size:.65rem;color:var(--ink2);font-family:ui-monospace,monospace;white-space:pre-wrap;word-break:break-word;line-height:1.55}
+.cat-preview.visible{display:block}
+.planner-summary{margin-top:.8rem;padding:.65rem .85rem;background:rgba(143,188,179,.1);border:1px solid var(--line);border-left:3px solid var(--accent2);border-radius:5px;font-size:.76rem;color:var(--ink2);font-family:ui-monospace,monospace}
+.planner-summary strong{color:var(--accent4)}
+.progress-bar{height:10px;background:var(--bg3);border-radius:5px;overflow:hidden;margin-bottom:.5rem;border:1px solid var(--line)}
+.progress-bar .fill{height:100%;background:linear-gradient(90deg,#8fbcb3,#d4a56a,#c98a6b);width:0%;transition:width .3s;border-radius:5px}
+.progress-bar .fill.done{background:linear-gradient(90deg,#7fb069,#a3d193)}
+.progress-pct{font-family:Georgia,serif;font-size:1.15rem;color:var(--accent4);text-align:center;margin-bottom:1rem;font-weight:600}
+.result-category{margin-bottom:1.5rem;border-top:1px solid var(--line);padding-top:.85rem}
+.result-category h3{font-family:Georgia,serif;font-size:.98rem;color:var(--accent4);margin-bottom:.65rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;font-weight:600}
+.result-category h3 .cat-stat{font-size:.72rem;color:var(--accent2);font-family:ui-monospace,monospace;font-weight:500}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.65rem}
+.result-card{background:var(--bg2);border:1px solid var(--line);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .3s,box-shadow .3s}
+.result-card.pending{border-color:var(--line);opacity:.85}
+.result-card.generating{border-color:var(--accent3);box-shadow:0 0 12px rgba(212,165,106,.35)}
+.result-card.done{border-color:var(--accent2)}
+.result-card.error{border-color:var(--err)}
+.result-img{aspect-ratio:9/16;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative;min-height:200px;overflow:hidden}
+.result-img img{width:100%;height:100%;object-fit:cover;display:block;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.result-img .load{width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.45rem;color:var(--ink3);font-size:.68rem;font-family:ui-monospace,monospace;padding:.5rem;text-align:center;position:relative;overflow:hidden}
+.result-img .load::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(143,188,179,.12) 50%,transparent 70%);animation:shim 1.8s linear infinite;pointer-events:none}
+@keyframes shim{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.result-img .load .spin{width:22px;height:22px;border:2px solid rgba(212,165,106,.25);border-top-color:var(--accent3);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.result-img .err{color:#b85a4a;font-size:.65rem;padding:.5rem;text-align:center;display:flex;flex-direction:column;gap:.3rem}
+.result-img .err small{color:var(--ink3);font-size:.58rem;font-family:ui-monospace,monospace}
+.result-meta{padding:.55rem .6rem;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:.3rem;font-size:.62rem;font-family:ui-monospace,monospace;color:var(--ink2)}
+.result-meta a{color:var(--accent2);text-decoration:none;font-size:.75rem;padding:.18rem .45rem;border:1px solid var(--line2);border-radius:3px;font-weight:700}
+.result-meta a:hover{border-color:var(--accent2);background:rgba(143,188,179,.1)}
+.panel{position:fixed;bottom:0;left:0;right:0;z-index:40}
+.handle{background:var(--bg2);border-top:2px solid var(--accent3);padding:.55rem 1rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;gap:.5rem;box-shadow:0 -2px 8px rgba(60,40,20,.08)}
+.handle .toggle{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--accent4);letter-spacing:.1em;flex-shrink:0;font-weight:700}
+.handle .latest{font-size:.72rem;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left;padding-left:.5rem}
+.handle button{font-size:.62rem;padding:.25rem .55rem;border:1px solid var(--line2);border-radius:4px;background:var(--bg3);color:var(--ink2);cursor:pointer;font-family:-apple-system,sans-serif}
+.handle button:hover{color:var(--accent4);border-color:var(--accent3)}
+.panel-content{background:var(--bg);border-top:1px solid var(--line);max-height:50vh;overflow-y:auto}
+.panel-content.hidden{display:none}
+.human-log{max-height:100px;overflow-y:auto;padding:.6rem 1rem;border-bottom:1px solid var(--line);font-family:ui-monospace,monospace;font-size:.72rem}
+.human-log>div{margin-bottom:.2rem}
+.human-log .t{color:var(--ink3)}
+.human-log .m{color:var(--accent4)}
+.debug-log{max-height:240px;overflow-y:auto;padding:.6rem 1rem;font-family:ui-monospace,monospace;font-size:.68rem;line-height:1.55}
+.debug-log>div{margin-bottom:.18rem;word-break:break-word}
+.debug-log .t{color:var(--ink3)}
+.debug-log .info{color:var(--ink2)}
+.debug-log .ok{color:#4f7a3a}
+.debug-log .warn{color:#9a7328}
+.debug-log .err{color:#b85a4a}
+.debug-log .api{color:var(--accent2)}
+.toast{position:fixed;top:1rem;left:50%;transform:translateX(-50%) translateY(-120px);background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--accent2);border-radius:6px;padding:.75rem 1.2rem;font-size:.82rem;z-index:1000;opacity:0;transition:transform .3s,opacity .3s;max-width:90vw;text-align:center;font-family:Georgia,serif;box-shadow:0 4px 20px rgba(60,40,20,.15);color:var(--ink)}
+.toast.visible{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.success{border-left-color:var(--ok)}
+.toast.error{border-left-color:var(--err)}
+.toast.warn{border-left-color:var(--warn)}
+.status-bar{position:fixed;bottom:60px;left:0;right:0;background:var(--bg2);border-top:1px solid var(--line);padding:.5rem 1rem;font-size:.72rem;font-family:ui-monospace,monospace;color:var(--ink);display:flex;align-items:center;gap:.5rem;transform:translateY(100%);transition:transform .3s;z-index:30;box-shadow:0 -2px 8px rgba(60,40,20,.08)}
+.status-bar.visible{transform:translateY(0)}
+.status-bar .spinner{width:12px;height:12px;border:2px solid rgba(212,165,106,.2);border-top-color:var(--accent3);border-radius:50%;animation:spin .8s linear infinite}
+.hidden{display:none!important}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.45rem}
+.gallery-grid .gitem{position:relative;background:var(--bg3);border:1px solid var(--line);border-radius:4px;overflow:hidden;aspect-ratio:9/16;cursor:pointer;transition:border-color .15s}
+.gallery-grid .gitem:hover{border-color:var(--accent3)}
+.gallery-grid .gitem img{width:100%;height:100%;object-fit:cover}
+.gallery-grid .gitem .rm{position:absolute;top:3px;right:3px;background:rgba(217,122,108,.92);color:#fff;border:none;border-radius:3px;width:20px;height:20px;font-size:.62rem;cursor:pointer;font-weight:700}
+.list-actions{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.4rem}
+.list-actions .btn{flex:0 0 auto;min-width:auto}
+.config-list{margin-bottom:.9rem;padding:.7rem;background:var(--bg3);border:1px solid var(--line);border-radius:6px}
+.config-list label{font-size:.74rem;color:var(--ink2);display:block;margin-bottom:.4rem;font-weight:600}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--bg3)}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent3)}
+@media(min-width:900px){.result-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}}
+
+#imageEditorModal textarea{min-height:100px}
+#imageEditorModal .card{max-height:96vh;overflow:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+<div class="kata">✦ Moebius Film Library — v8 ✦</div>
+<h1>Bibliothèque d'Images pour Film</h1>
+<p class="sub">Analyse forensique · Style par image/artiste · Presets éditables · Compte email + PIN</p>
+</header>
+
+<div class="topnav">
+  <div class="tab active" data-tab="gen">🎬 Génération</div>
+  <div class="tab" data-tab="config">⚙️ Config</div>
+  <div class="tab" data-tab="gallery">🖼️ Galerie</div>
+  <div class="tab" data-tab="account">👤 Compte</div>
+</div>
+
+<!-- ============ TAB GEN ============ -->
+<div class="tab-content active" id="tab-gen">
+
+<section class="card">
+<div class="card-head"><span>🖼️ Personnage</span><span class="badge" id="refBadge">0 source</span></div>
+<div class="card-body">
+<div class="mode-tabs">
+  <button class="mode-tab active" data-char-mode="image" type="button">Par image</button>
+  <button class="mode-tab" data-char-mode="text" type="button">Par texte</button>
+</div>
+<div id="charModeImage">
+  <p class="hint">Image nette, visage et vêtements visibles. L'analyse renforce le prompt de description.</p>
+  <div class="images-grid" id="imagesGrid"></div>
+  <div class="status" id="analyzeStatus"><span class="dot"></span><span id="analyzeStatusText">En attente</span></div>
+  <div class="row"><button class="btn btn-amber" id="analyzeBtn" disabled>🔍 Analyser le personnage</button></div>
+</div>
+<div id="charModeText" class="hidden">
+  <p class="hint">Écrivez librement votre description. Pas besoin d'image.</p>
+</div>
+<label style="font-size:.74rem;color:var(--ink2);display:block;margin:.9rem 0 .35rem;font-weight:600;">📝 Description finale (injectée dans les prompts) :</label>
+<textarea id="charDescInput" placeholder="A middle-aged man with warm brown skin, light blue knit beanie..." style="min-height:130px;"></textarea>
+<div class="hint" id="charDescLen">0 caractère</div>
+</div>
+</section>
+
+<section class="card">
+<div class="card-head"><span>🎨 Direction artistique</span></div>
+<div class="card-body">
+<div class="mode-tabs">
+  <button class="mode-tab active" data-style-mode="preset" type="button">Preset</button>
+  <button class="mode-tab" data-style-mode="image" type="button">Image</button>
+  <button class="mode-tab" data-style-mode="artist" type="button">Artiste IA</button>
+</div>
+<div id="styleModePreset">
+  <select id="styleSelect"></select>
+  <div class="hint">Les listes sont éditables dans l'onglet Config.</div>
+</div>
+<div id="styleModeImage" class="hidden">
+  <p class="hint">Analyse uniquement le style (couleurs, médium, lumière, composition).</p>
+  <div class="images-grid" id="styleImagesGrid"></div>
+  <div class="status" id="styleAnalyzeStatus"><span class="dot"></span><span id="styleAnalyzeStatusText">En attente</span></div>
+  <div class="row"><button class="btn btn-amber" id="analyzeStyleBtn" disabled>🔍 Analyser le style</button></div>
+</div>
+<div id="styleModeArtist" class="hidden">
+  <div class="row-inline">
+    <input type="text" id="artistNameInput" placeholder="Ex: Hayao Miyazaki, Moebius, Ansel Adams…">
+    <button class="btn btn-amber" id="artistGenBtn" type="button">✨ Générer</button>
+  </div>
+  <div class="hint">Le prompt est mémorisé dans les presets peintres.</div>
+</div>
+<label style="font-size:.74rem;color:var(--ink2);display:block;margin:.9rem 0 .35rem;font-weight:600;">Style final (préfixe chaque prompt) :</label>
+<textarea id="styleInput" style="min-height:130px;"></textarea>
+</div>
+</section>
+
+<section class="card">
+<div class="card-head"><span>🎬 Plan de la bibliothèque</span><span class="badge" id="plannerBadge">0 image</span></div>
+<div class="card-body">
+<div id="categoriesList" class="categories-list"></div>
+<div class="row">
+<button class="btn btn-slate" id="addCategoryBtn" style="flex:1;">＋ Créer une catégorie</button>
+<button class="btn btn-slate" id="resetPlannerBtn" style="flex:1;">↺ Réinitialiser</button>
+</div>
+<div class="planner-summary" id="plannerSummary">Aucune catégorie active.</div>
+<button class="btn btn-mega" id="generateBtn" disabled style="margin-top:1rem;">✦ Générer la bibliothèque</button>
+<div class="row" style="margin-top:.5rem;"><button class="btn btn-danger hidden" id="stopBtn" style="flex:0 0 auto;">⏹ Stopper</button></div>
+</div>
+</section>
+
+<section class="card hidden" id="resultsCard">
+<div class="card-head"><span>📚 Bibliothèque générée</span><span class="badge" id="resultsBadge">0 / 0</span></div>
+<div class="card-body">
+<div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+<div class="progress-pct" id="progressPct">0%</div>
+<div id="resultsRoot"></div>
+</div>
+</section>
+
+</div>
+
+<!-- ============ TAB CONFIG ============ -->
+<div class="tab-content" id="tab-config">
+
+<section class="card">
+<div class="card-head"><span>🔑 Clés API</span><span class="badge" id="keyBadge">0 clé</span></div>
+<div class="card-body">
+<textarea id="keysInput" placeholder="sk-xxxxxxxxxxxx (une par ligne)" autocomplete="off" spellcheck="false"></textarea>
+<div class="row">
+<button class="btn btn-amber" id="validateBtn">⚡ Valider et sauvegarder</button>
+<button class="btn btn-slate" id="clearKeysBtn" style="flex:0 0 auto;min-width:80px;">Effacer</button>
+</div>
+<div class="keys-panel" id="keysPanel"></div>
+<div class="status" id="keyStatus"><span class="dot"></span><span id="keyStatusText">Aucune clé</span></div>
+</div>
+</section>
+
+<section class="card">
+<div class="card-head"><span>📚 Listes de styles</span><span class="badge">éditables</span></div>
+<div class="card-body">
+<p class="hint">Une ligne = un style. Séparateur « — » entre nom et description. Chaque liste alimente le menu déroulant et peut être améliorée par IA.</p>
+<div class="row" style="margin-bottom:.8rem;">
+  <button class="btn btn-slate" id="configExportBtn">⬇ Exporter</button>
+  <button class="btn btn-slate" id="configImportBtn">⬆ Importer</button>
+  <button class="btn btn-slate" id="configResetBtn">↺ Reset</button>
+</div>
+
+<div class="config-list">
+<label>Photographes</label>
+<textarea id="cfgPhotographers" style="min-height:90px;"></textarea>
+<div class="list-actions">
+  <button class="btn btn-slate" data-improve="photographers">✨ Améliorer cette liste par IA</button>
+</div>
+</div>
+
+<div class="config-list">
+<label>Peintres célèbres</label>
+<textarea id="cfgPainters" style="min-height:170px;"></textarea>
+<div class="list-actions">
+  <button class="btn btn-slate" data-improve="painters">✨ Améliorer cette liste par IA</button>
+</div>
+</div>
+
+<div class="config-list">
+<label>Styles célèbres</label>
+<textarea id="cfgStyles" style="min-height:130px;"></textarea>
+<div class="list-actions">
+  <button class="btn btn-slate" data-improve="styles">✨ Améliorer cette liste par IA</button>
+</div>
+</div>
+
+<div class="config-list">
+<label>Films d'animation</label>
+<textarea id="cfgAnimations" style="min-height:130px;"></textarea>
+<div class="list-actions">
+  <button class="btn btn-slate" data-improve="animations">✨ Améliorer cette liste par IA</button>
+</div>
+</div>
+
+<div class="config-list">
+<label>Mangas</label>
+<textarea id="cfgMangas" style="min-height:130px;"></textarea>
+<div class="list-actions">
+  <button class="btn btn-slate" data-improve="mangas">✨ Améliorer cette liste par IA</button>
+</div>
+</div>
+
+<div class="config-list">
+<label>BD / Comics</label>
+<textarea id="cfgComics" style="min-height:130px;"></textarea>
+<div class="list-actions">
+  <button class="btn btn-slate" data-improve="comics">✨ Améliorer cette liste par IA</button>
+</div>
+</div>
+
+<div class="config-list">
+<label>Peintres modernes</label>
+<textarea id="cfgModern" style="min-height:130px;"></textarea>
+<div class="list-actions">
+  <button class="btn btn-slate" data-improve="modern">✨ Améliorer cette liste par IA</button>
+</div>
+</div>
+
+<div class="config-list">
+<label>Types de film</label>
+<textarea id="cfgFilmTypes" style="min-height:130px;"></textarea>
+<div class="list-actions">
+  <button class="btn btn-slate" data-improve="filmTypes">✨ Améliorer cette liste par IA</button>
+</div>
+</div>
+
+<div class="config-list">
+<label>Types d'affiche</label>
+<textarea id="cfgPosters" style="min-height:130px;"></textarea>
+<div class="list-actions">
+  <button class="btn btn-slate" data-improve="posters">✨ Améliorer cette liste par IA</button>
+</div>
+</div>
+
+<div class="row"><button class="btn btn-amber" id="configSaveBtn">💾 Sauvegarder les listes</button></div>
+<div class="status" id="configStatus"><span class="dot"></span><span id="configStatusText">Prêts</span></div>
+</div>
+</section>
+
+</div>
+
+<!-- ============ TAB GALLERY ============ -->
+<div class="tab-content" id="tab-gallery">
+<section class="card">
+<div class="card-head"><span>🖼️ Ma galerie</span><span class="badge" id="galleryBadge">0</span></div>
+<div class="card-body">
+<p class="hint">Images générées sauvegardées dans votre compte.</p>
+<div class="gallery-grid" id="galleryGrid"></div>
+<div class="row"><button class="btn btn-slate" id="refreshGalleryBtn">↻ Rafraîchir</button></div>
+</div>
+</section>
+</div>
+
+<!-- ============ TAB ACCOUNT ============ -->
+<div class="tab-content" id="tab-account">
+<section class="card">
+<div class="card-head"><span>👤 Compte</span><span class="badge" id="authBadge">non connecté</span></div>
+<div class="card-body">
+<div id="authLoggedOut">
+  <p class="hint">Email + PIN 4 chiffres. Vos données sont séparées par compte dans le stockage local de ce navigateur (IndexedDB), pas sur un serveur.</p>
+  <div class="row"><input type="email" id="authEmail" placeholder="email@exemple.com" autocomplete="email"></div>
+  <div class="row">
+    <input type="password" id="authPin" placeholder="PIN 4 chiffres" inputmode="numeric" maxlength="4" autocomplete="off" style="flex:1;min-width:120px;">
+    <button class="btn btn-amber" id="authLoginBtn" style="flex:0 0 auto;">Connexion</button>
+    <button class="btn btn-slate" id="authRegisterBtn" style="flex:0 0 auto;">Créer</button>
+  </div>
+  <div class="status" id="authStatus"><span class="dot"></span><span id="authStatusText">Non connecté</span></div>
+</div>
+<div id="authLoggedIn" class="hidden">
+  <div class="row" style="align-items:center;">
+    <span style="font-size:.85rem;color:var(--accent4);flex:1;font-weight:600;">Connecté : <strong id="authWho"></strong></span>
+    <button class="btn btn-slate" id="authLogoutBtn" style="flex:0 0 auto;">Déconnexion</button>
+  </div>
+</div>
+</div>
+</section>
+</div>
+
+</div>
+
+
+<div id="imageEditorModal" class="hidden" style="position:fixed;inset:0;z-index:2000;background:rgba(30,24,20,.72);padding:1rem;overflow:auto;">
+  <section class="card" style="max-width:850px;margin:2vh auto;background:var(--bg2);">
+    <div class="card-head"><span>🖼️ Détails et nouvelle version</span><button class="btn btn-slate" id="closeImageEditor" type="button">Fermer ✕</button></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">
+        <div><img id="editSourcePreview" alt="Image sélectionnée" style="width:100%;max-height:420px;object-fit:contain;background:var(--bg3);border-radius:6px;">
+        <p class="hint" id="editSourceInfo"></p></div>
+        <div>
+          <label style="display:block;font-weight:700;margin-bottom:.35rem;">Prompt complet enregistré / modifiable</label>
+          <textarea id="editPrompt" style="min-height:190px"></textarea>
+          <p class="hint">Le prompt est reconstruit en blocs : sujet, scène, direction artistique prioritaire, lumière, cadrage et contraintes.</p>
+          <label style="display:block;font-weight:700;margin:.8rem 0 .35rem;">Photo de référence facultative</label>
+          <input id="editReferenceFile" type="file" accept="image/*">
+          <p class="hint">Si vous choisissez une photo, elle sera analysée en texte avant de générer l’image. Aucun appel image→image direct.</p>
+          <div class="row"><button class="btn btn-slate" id="editAnalyzeSource" type="button">Analyser l’image sélectionnée</button><button class="btn btn-amber" id="editGenerate" type="button">Générer une nouvelle image</button></div>
+          <div class="status" id="editStatus"><span class="dot"></span><span id="editStatusText">Prêt à modifier</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="panel">
+<div class="handle" id="panelHandle">
+<span class="toggle" id="panelToggle">▼ CONSOLE</span>
+<span class="latest" id="humanLatest">Prêt.</span>
+<button id="copyConsoleBtn" type="button">Copier</button>
+<button id="clearConsoleBtn" type="button">Effacer</button>
+</div>
+<div class="panel-content hidden" id="panelContent">
+<div class="human-log" id="humanLog"></div>
+<div class="debug-log" id="debugLog"></div>
+</div>
+</div>
+
+<div class="toast" id="toast"><span id="toastText">Message</span></div>
+<div class="status-bar" id="statusBar"><div class="spinner"></div><span id="statusText">Préparation…</span></div>
+
+<script>
+'use strict';
+
+// ============================================================
+// CONFIG API
+// ============================================================
+const API_BASE = 'https://apihub.agnes-ai.com/v1';
+const MODEL_TEXT = 'agnes-2.5-flash';
+const MODEL_IMAGE = 'agnes-image-2.5-flash';
+const IMAGE_SIZE = '1024x1792';
+const MAX_CONCURRENT = 8;
+const MAX_ATTEMPTS = 5;
+const VISION_TIMEOUT = 90000;
+const IMAGE_TIMEOUT = 120000;
+const WORKER_COUNT = 8;
+const ADAPTIVE_DELAY = 2500;
+
+// ============================================================
+// PRESETS DÉFAUT
+// ============================================================
+const PRESET_DEFAULTS = {
+  photographers: `Ansel Adams — paysages noir et blanc, zone system
+Henri Cartier-Bresson — instant décisif, noir et blanc 35mm
+Robert Capa — photojournalisme de guerre
+Annie Leibovitz — portraits dramatiques, éclairage studio
+Steve McCurry — couleurs saturées, portraits d'Asie
+Sebastião Salgado — humanisme épique, noir et blanc
+Diane Arbus — portraits marginaux, frontalité
+Irving Penn — portraits studio minimalistes
+Vivian Maier — street photography, reflets
+Cindy Sherman — autoportraits conceptuels`,
+
+  painters: `Léonard de Vinci — sfumato, proportions
+Michel-Ange — puissance anatomique
+Raphaël — harmonie classique
+Titien — colorisme vénitien
+Le Caravage — clair-obscur dramatique
+Rembrandt — lumière dorée, portraits
+Vermeer — lumière froide, intérieurs
+Velázquez — portraits royaux
+Francisco Goya — sombre, expressionniste
+Joseph Turner — atmosphères lumineuses
+Caspar David Friedrich — romantisme sublime
+Gustave Courbet — réalisme
+Édouard Manet — modernité
+Claude Monet — impressionnisme, lumière
+Pierre-Auguste Renoir — chaleur humaine
+Edgar Degas — danseuses, cadrages
+Paul Cézanne — volumes géométriques
+Vincent van Gogh — coups de pinceau tourbillonnants
+Paul Gauguin — couleurs synthétiques
+Gustav Klimt — dorures, motifs
+Edvard Munch — angoisse existentielle
+Henri Matisse — fauvisme, joie
+Pablo Picasso — cubisme
+Georges Braque — cubisme analytique
+Salvador Dalí — surréalisme onirique
+René Magritte — surréalisme conceptuel
+Frida Kahlo — autoportraits symboliques
+Jackson Pollock — dripping abstrait
+Mark Rothko — champs colorés
+Andy Warhol — pop art sérigraphie`,
+
+  styles: `Art déco — géométrie luxueuse
+Art nouveau — lignes organiques
+Bauhaus — fonctionnalisme géométrique
+Surréalisme — rêve et inconscient
+Cubisme — fragmentation
+Impressionnisme — lumière fragmentée
+Expressionnisme — émotion déformée
+Minimalisme — épure
+Pop art — culture de masse
+Baroque — opulence dramatique
+Rococo — légèreté ornementale
+Néo-classicisme — ordre antique
+Romantisme — sublime émotionnel
+Symbolisme — allégorie mystique
+Constructivisme — géométrie militante
+De Stijl — abstraction pure
+Futurisme — vitesse moderne
+Vorticisme — géométrie dynamique
+Abstraction lyrique — geste libre
+Gaudí — architecture organique`,
+
+  animations: `Hayao Miyazaki (Ghibli) — nature et merveilleux
+Isao Takahata (Ghibli) — réalisme poétique
+Makoto Shinkai — lumières célestes
+Satoshi Kon — psychologie et montage
+Mamoru Hosoda — famille et virtuel
+Walt Disney — animation classique
+Pixar — 3D émotionnelle
+DreamWorks — animation spectaculaire
+Laika — stop-motion expressive
+Aardman — pâte à modeler britannique
+René Laloux — science-fiction dessinée
+Sylvain Chomet — animation à la française
+Jean-François Laguionie — poésie peinte
+Michel Ocelot — contes colorés
+Cartoon Saloon — enluminures irlandaises
+Genndy Tartakovsky — style graphique épuré
+Craig McCracken — cartoon moderne
+Rebecca Sugar — sensibilité contemporaine
+Pendleton Ward — aventure décalée
+Hiroyuki Imaishi — énergie survoltée`,
+
+  mangas: `Osamu Tezuka — dieu du manga
+Katsuhiro Otomo — cyberpunk détaillé
+Akira Toriyama — Dragon Ball
+Eiichiro Oda — One Piece
+Masashi Kishimoto — Naruto
+Tite Kubo — Bleach
+Hajime Isayama — L'Attaque des Titans
+Naoki Urasawa — thriller psychologique
+Takehiko Inoue — Slam Dunk, réalisme
+Rumiko Takahashi — comédie romantique
+CLAMP — shōjo raffiné
+Naoko Takeuchi — Sailor Moon
+Hiromu Arakawa — Fullmetal Alchemist
+Yoshihiro Togashi — Hunter x Hunter
+Kentaro Miura — Berserk, dark fantasy
+Junji Ito — horreur
+Inio Asano — réalisme contemporain
+Taiyo Matsumoto — graphisme libre
+Moto Hagio — shōnen-ai fondateur
+Leiji Matsumoto — space opera`,
+
+  comics: `Will Eisner — père du graphic novel
+Jack Kirby — dynamisme cosmique
+Frank Miller — noir et dur
+Alan Moore — narration complexe
+Neil Gaiman — fantastique littéraire
+Moebius — ligne claire raffinée
+Enki Bilal — science-fiction européenne
+Hergé — ligne claire
+Uderzo — Astérix
+Morris — Lucky Luke
+Peyo — Schtroumpfs
+André Franquin — Gaston Lagaffe
+Hugo Pratt — Corto Maltese
+Philippe Druillet — baroque spatial
+Jacques Tardi — chroniques parisiennes
+Art Spiegelman — Maus
+Chris Ware — géométrie mélancolique
+Daniel Clowes — indé américain
+Charles Schulz — Peanuts
+Bill Watterson — Calvin & Hobbes`,
+
+  modern: `David Hockney — couleurs californiennes
+Lucian Freud — portraits charnels
+Francis Bacon — déformation angoissée
+Gerhard Richter — abstraction photographique
+Cy Twombly — gribouillis poétiques
+Anselm Kiefer — mémoire et matière
+Jean-Michel Basquiat — énergie urbaine
+Keith Haring — pictogrammes
+Yayoi Kusama — pois obsessionnels
+Takashi Murakami — superflat
+Jeff Koons — kitsch monumental
+Damien Hirst — concept choquant
+Banksy — street art politique
+JR — photographie urbaine
+Shepard Fairey — graphisme militant
+Jenny Saville — corps monumentaux
+Marlene Dumas — portraits liquides
+Cecily Brown — figuration gestuelle
+Julie Mehretu — couches architecturales
+Zeng Fanzhi — expressionnisme chinois`,
+
+  filmTypes: `Film noir — ombres et fatalité
+Néoréalisme italien — réalité sociale
+Nouvelle Vague — liberté formelle
+Cinéma expressionniste allemand — décors déformés
+Western — grands espaces
+Péplum — antiquité spectaculaire
+Comédie musicale — chant et danse
+Science-fiction — futur et altérité
+Horreur gothique — épouvante atmosphérique
+Thriller psychologique — tension mentale
+Drame social — réalisme critique
+Documentaire poétique — regard personnel
+Cinéma muet — gestes et intertitres
+Film d'animation — image dessinée
+Road movie — errance
+Film historique — reconstitution
+Mélodrame — émotion exacerbée
+Film expérimental — forme libre
+Cyberpunk — high tech low life
+Fantastique — irruption du surnaturel`,
+
+  posters: `Affiche constructiviste soviétique
+Affiche Art déco voyage
+Affiche psychédélique 60s
+Affiche polar film noir
+Affiche minimaliste moderne
+Affiche typographique suisse
+Affiche film d'horreur vintage
+Affiche Bollywood peinte
+Affiche western spaghetti
+Affiche nouvelle vague
+Affiche blockbuster contemporaine
+Affiche rétro-futuriste
+Affiche collage dadaïste
+Affiche sérigraphie pop
+Affiche de propagande
+Affiche de cirque ancienne
+Affiche japonaise ukiyo-e
+Affiche gothique victorienne
+Affiche space opera
+Affiche film expérimental`
+};
+
+// ============================================================
+// STYLES DE BASE
+// ============================================================
+const STYLE_PRESETS = {
+  moebius: {
+    label: "Moebius — Ligne claire raffinée",
+    prompt: "In the masterful style of Mœbius (Jean Giraud). Refined ligne claire illustration with precise ink contours. Sun-bleached pastels: pale ochre, dusty rose, soft turquoise. Dreamlike surreal landscapes, crystalline rock formations, cosmic silence. Watercolor washes over ink linework, flat color regions, generous negative space. Museum-quality illustration."
+  },
+  otomo: {
+    label: "Katsuhiro Otomo — Akira cyberpunk",
+    prompt: "In the masterful style of Katsuhiro Otomo, creator of Akira. Dense hyper-detailed ink linework, dramatic perspective, gritty cyberpunk atmosphere. High-contrast black and white with selective neon accents. Intricate urban chaos, smoke, debris, glowing signs. Cinematic manga panel composition."
+  },
+  wesanderson: {
+    label: "Wes Anderson — Symétrie pastel",
+    prompt: "In the meticulous cinematographic style of Wes Anderson. Perfectly symmetrical centered composition, flat frontal framing. Pastel palette: dusty pink, mint green, mustard, cream. Retro production design, theatrical staging. Soft diffuse light, deep focus, 35mm film grain. Storybook aesthetic."
+  },
+  hopper: {
+    label: "Edward Hopper — Solitude américaine",
+    prompt: "In the iconic style of Edward Hopper. American realist oil painting. Isolated figure in architectural urban setting. Strong directional light, long shadows, geometric composition. Muted palette: warm ochre, deep green, cobalt blue. Quiet alienation, contemplative stillness. Oil on canvas texture."
+  },
+  fusion: {
+    label: "✦ Fusion subtile — Tous artistes",
+    prompt: "A subtle masterful fusion of Moebius's ligne claire refinement, Otomo's cyberpunk detail, Wes Anderson's symmetrical composition, Hopper's directional light, and Hockney's sunlit flat color. Harmonized into a singular aesthetic: intricate ink contours, dusty pastel and sun-warmed palette, precise symmetrical staging, dramatic side lighting, crisp graphic shadows. Museum-quality masterpiece."
+  }
+};
+const DEFAULT_STYLE_KEY = 'moebius';
+
+// ============================================================
+// PROMPTS VISION
+// ============================================================
+const VISION_SYS = `You are an ultra-precise forensic portrait analyst. Describe ONE person in this image with exhaustive detail.
+OUTPUT: ONE SINGLE PARAGRAPH of at least 120 words. No lists, no bullets, no JSON, no markdown, no quotes, no prefix.
+STRUCTURE (fused into prose):
+1. HEADWEAR — hat/beanie/cap or "no headwear" + hair details.
+2. FACE — age range, gender, skin tone, face shape, eyes, eyebrows, nose, lips.
+3. FACIAL HAIR — clean-shaven / stubble / mustache / goatee / full beard, exact shape/color/thickness.
+4. CLOTHING — layer by layer, exact colors, materials, patterns, state of wear.
+5. ACCESSORIES — glasses, earrings, necklace, watch, rings, scarf, bag.
+6. BODY — posture, build, expression, gaze direction.
+RULES: never invent; write "unclear" if needed. If multiple people, describe only the most prominent. If no person, invent a highly specific marginal character. MINIMUM 120 words.`;
+
+const VISION_USER = "Describe the primary person in extreme detail. Minimum 120 words. One single paragraph. No JSON, no markdown, no bullets.";
+
+const STYLE_VISION_SYS = `You are a visual style analyst. Analyze ONLY the artistic STYLE of this image — never describe the subject's identity.
+OUTPUT: ONE SINGLE PARAGRAPH of at least 100 words in English. No JSON, no markdown, no bullets.
+COVER (fused into prose): MEDIUM (oil/watercolor/ink/digital/photo/3D/charcoal), COLOR PALETTE (named hues, saturation, temperature, contrast), LIGHTING (direction, quality), COMPOSITION (symmetry, framing, perspective, negative space), TEXTURE (brushwork, grain, hatching), ERA/REFERENCE (movement, film era, tradition). MINIMUM 100 words.`;
+
+const STYLE_VISION_USER = "Analyze the artistic style. Minimum 100 words. One single paragraph. No JSON, no markdown, no bullets.";
+
+const ARTIST_PROMPT_SYS = `You are an expert art historian and prompt engineer. Given an artist's name, write ONE dense English paragraph (minimum 100 words) describing their distinctive visual style, suitable as a prefix for AI image generation.
+COVER (fused into prose): medium, signature color palette, lighting habits, composition tendencies, textures, thematic obsessions, historical era, technical signatures (brushwork, linework, grain).
+No JSON, no markdown, no bullets, no preamble, no quotes. Minimum 100 words.`;
+
+const IMPROVE_LIST_SYS = `You are an expert art historian and style curator. Given a list of artistic styles or artists, REWRITE and IMPROVE each line to be more evocative, precise, and useful as an AI image generation prompt prefix. Keep the SAME number of lines and the SAME names (before the " — " separator). Enrich the description after the separator with specific visual details: medium, palette, lighting, composition, texture.
+Return ONLY the improved list, one entry per line, same format "Name — description". No markdown, no bullets, no numbering, no preamble.`;
+
+// ============================================================
+// PLANS PAR DÉFAUT
+// ============================================================
+const DEFAULT_CATEGORIES = [
+  {
+    id: 'portraits', name: 'Portraits', icon: '👤', mode: 'variations', enabled: true, count: 10,
+    includeMainCharacter: true,
+    template: 'A portrait of {CHARACTER}. {FRAMING}. {EXPRESSION}. {LIGHTING}, {BACKGROUND}.',
+    variations: {
+      FRAMING: ['Extreme close-up on the face', 'Tight close-up portrait', 'Close-up from the shoulders up', 'Bust shot showing the upper chest', 'Medium close-up showing some clothing'],
+      EXPRESSION: ['with a calm neutral expression', 'with a subtle warm smile', 'with a thoughtful distant gaze', 'looking directly at the viewer', 'with a serious focused look', 'with a gentle melancholic expression'],
+      LIGHTING: ['soft golden hour light', 'diffuse overcast daylight', 'warm interior lamplight', 'cool blue moonlight', 'dramatic side lighting', 'soft window light'],
+      BACKGROUND: ['against a plain neutral wall', 'against a soft blurred backdrop', 'against a subtle warm gradient', 'against atmospheric fog']
+    }
+  },
+  {
+    id: 'fullbody', name: 'Personnage en pied', icon: '🧍', mode: 'variations', enabled: false, count: 8,
+    includeMainCharacter: true,
+    template: 'A full body shot of {CHARACTER}. {POSE}, {SETTING}, {LIGHTING}. Entire silhouette and all clothing layers clearly visible, head to toe.',
+    variations: {
+      POSE: ['standing still with hands at his sides', 'walking slowly forward', 'leaning against a wall', 'sitting on the edge of a chair', 'looking out into the distance', 'mid-stride'],
+      SETTING: ['in an empty street', 'in a minimalist studio', 'in a vast hall', 'on a rooftop', 'in a courtyard'],
+      LIGHTING: ['soft golden hour light', 'dramatic side lighting', 'diffuse overcast daylight', 'warm interior glow']
+    }
+  },
+  {
+    id: 'family', name: 'Personnage + Famille', icon: '👨👩👧', mode: 'items', enabled: false, perItem: 2,
+    includeMainCharacter: true,
+    items: [
+      { id: 'father', label: 'Père', prompt: 'his father, an older weathered man of about 70 with white hair, deep wrinkles, a warm gaze and a brown wool sweater' },
+      { id: 'mother', label: 'Mère', prompt: 'his mother, a warm middle-aged woman with silver-streaked hair, a gentle smile, glasses and a floral apron' },
+      { id: 'sister', label: 'Sœur', prompt: 'his younger sister, a woman in her twenties with long brown hair, bright eyes and a denim jacket' },
+      { id: 'brother', label: 'Frère', prompt: 'his older brother, a tall serious man in his thirties with a short beard and a dark jacket' },
+      { id: 'grandma', label: 'Grand-mère', prompt: 'his grandmother, a small silver-haired woman with kind eyes and a knitted cardigan' },
+      { id: 'grandpa', label: 'Grand-père', prompt: 'his grandfather, a stoic old man with a lined face and a flat cap' },
+      { id: 'aunt', label: 'Tante', prompt: 'his aunt, a lively middle-aged woman with curly hair and colorful clothes' },
+      { id: 'uncle', label: 'Oncle', prompt: 'his uncle, a sturdy man with a mustache and a work shirt' },
+      { id: 'cousin', label: 'Cousin', prompt: 'his young cousin, an energetic teenager with short hair and a hoodie' },
+      { id: 'child', label: 'Enfant', prompt: 'a small child, about six years old, with wide curious eyes and simple clothes' }
+    ],
+    selectedItems: ['father', 'mother'],
+    template: 'A medium shot with TWO characters clearly visible, both fully framed from the waist up and centered. The main protagonist: {CHARACTER}. Beside him, clearly distinct: {ITEM}. They are {ACTION}, {SETTING}, {LIGHTING}. Both faces and upper bodies clearly visible, neither cropped out of frame.',
+    variations: {
+      ACTION: ['sharing a quiet meal', 'walking side by side', 'in animated conversation', 'in a tender embrace', 'sitting in comfortable silence', 'laughing together'],
+      SETTING: ['in a family kitchen', 'in a modest living room', 'in a garden', 'on a park bench', 'on the porch of a house'],
+      LIGHTING: ['warm afternoon sunlight', 'soft morning glow', 'cozy evening lamplight', 'gentle window light']
+    }
+  },
+  {
+    id: 'friends', name: 'Personnage + Amis', icon: '🧑🤝🧑', mode: 'items', enabled: false, perItem: 2,
+    includeMainCharacter: true,
+    items: [
+      { id: 'one_friend', label: 'Un ami proche', prompt: 'a close friend of similar age, with a relaxed smile and casual clothes' },
+      { id: 'best_friend', label: 'Meilleur ami', prompt: 'his best friend, a friendly man with an easy laugh and a worn jacket' },
+      { id: 'two_friends', label: 'Deux amis', prompt: 'two close friends standing on either side of him' },
+      { id: 'three_friends', label: 'Trois amis', prompt: 'three friends forming a small group around him' },
+      { id: 'childhood', label: "Ami d'enfance", prompt: 'a childhood friend, familiar and comfortable, with a nostalgic presence' },
+      { id: 'diverse', label: 'Groupe diversifié', prompt: 'a diverse group of four friends from different backgrounds' }
+    ],
+    selectedItems: ['one_friend'],
+    template: 'A medium-wide group shot where ALL characters are clearly visible and fully framed from the waist up. {CHARACTER} is at the center; around him, clearly distinct: {ITEM}. They are {ACTION}, {SETTING}, {LIGHTING}. Every face is visible, no one is cropped, generous space for the whole group.',
+    variations: {
+      ACTION: ['laughing together', 'walking down the street', 'sharing drinks at a table', 'playing a board game', 'deep in conversation', 'sitting on a rooftop at sunset'],
+      SETTING: ['in a city street', 'on a café terrace', 'in a park', 'in a small apartment', 'in a lively bar', 'on a beach'],
+      LIGHTING: ['golden hour glow', 'neon night lights', 'warm afternoon sun', 'soft evening blue']
+    }
+  },
+  {
+    id: 'jobs', name: 'Personnage au travail', icon: '🔧', mode: 'items', enabled: false, perItem: 1,
+    includeMainCharacter: true,
+    items: [
+      { id: 'baker', label: 'Boulanger', prompt: 'working as a baker, surrounded by bread and ovens, wearing a white apron dusted with flour' },
+      { id: 'doctor', label: 'Médecin', prompt: 'working as a doctor, wearing a white coat and stethoscope, in a bright clinic' },
+      { id: 'teacher', label: 'Professeur', prompt: 'teaching in a classroom, holding a piece of chalk, writing on a blackboard' },
+      { id: 'farmer', label: 'Fermier', prompt: 'working as a farmer, in a field with a straw hat and work clothes' },
+      { id: 'mechanic', label: 'Mécanicien', prompt: 'working in a garage, under the hood of a car, with grease-stained hands' },
+      { id: 'painter', label: 'Peintre', prompt: 'painting at an easel in a studio, brush in hand, surrounded by canvases' },
+      { id: 'librarian', label: 'Bibliothécaire', prompt: 'shelving books in a quiet library aisle, in a soft cardigan' },
+      { id: 'carpenter', label: 'Charpentier', prompt: 'in a woodworking shop, planing a board, surrounded by wood shavings' },
+      { id: 'chef', label: 'Chef cuisinier', prompt: 'cooking in a restaurant kitchen, flames rising from a pan, wearing a chef jacket' },
+      { id: 'tailor', label: 'Tailleur', prompt: 'sewing at a worktable in a tailoring shop, with a tape measure around his neck' },
+      { id: 'postman', label: 'Facteur', prompt: 'delivering mail on a bicycle, wearing a postal uniform' },
+      { id: 'florist', label: 'Fleuriste', prompt: 'arranging flowers in a florist shop, surrounded by colorful bouquets' },
+      { id: 'bookseller', label: 'Libraire', prompt: 'in a bookshop among tall shelves of books, holding an open volume' },
+      { id: 'bartender', label: 'Barman', prompt: 'behind a bar polishing a glass, in a dimly lit tavern' },
+      { id: 'photographer', label: 'Photographe', prompt: 'in a studio holding a camera, surrounded by lights and backdrops' },
+      { id: 'journalist', label: 'Journaliste', prompt: 'writing at a cluttered desk with a typewriter and papers, in a newsroom' },
+      { id: 'astronaut', label: 'Astronaute', prompt: 'in a space suit floating inside a space station, looking out at Earth' },
+      { id: 'sailor', label: 'Marin', prompt: 'on a fishing boat hauling nets, in oilskins and a cap' },
+      { id: 'plumber', label: 'Plombier', prompt: 'working under a sink with tools, in work clothes' }
+    ],
+    selectedItems: ['baker', 'doctor'],
+    template: '{CHARACTER} is {ITEM}, {LIGHTING}. The workplace is clearly visible around him. Medium shot, character fully framed from the waist up.',
+    variations: {
+      LIGHTING: ['in morning light', 'under warm workshop lamps', 'in fluorescent indoor light', 'in afternoon sun through windows', 'in dramatic chiaroscuro light']
+    }
+  },
+  {
+    id: 'sports', name: 'Personnage sportif', icon: '⚽', mode: 'items', enabled: false, perItem: 1,
+    includeMainCharacter: true,
+    items: [
+      { id: 'running', label: 'Course', prompt: 'running at full stride on a track, athletic gear' },
+      { id: 'swimming', label: 'Natation', prompt: 'swimming in a pool, water splashing around him' },
+      { id: 'football', label: 'Football', prompt: 'playing football on a pitch, mid-kick, wearing a jersey' },
+      { id: 'tennis', label: 'Tennis', prompt: 'playing tennis on a court, mid-serve, wearing white' },
+      { id: 'climbing', label: 'Escalade', prompt: 'climbing a rock face, hands gripping stone, chalk dust' },
+      { id: 'cycling', label: 'Cyclisme', prompt: 'riding a racing bicycle on a mountain road' },
+      { id: 'boxing', label: 'Boxe', prompt: 'in a boxing ring with gloved fists raised, focused gaze' },
+      { id: 'surfing', label: 'Surf', prompt: 'surfing a breaking wave, balanced on a board' },
+      { id: 'skiing', label: 'Ski', prompt: 'skiing down a snowy slope, leaning into a turn' },
+      { id: 'yoga', label: 'Yoga', prompt: 'in a yoga pose in a sunlit studio, calm and centered' },
+      { id: 'basketball', label: 'Basket', prompt: 'shooting a basketball, arms extended, on an outdoor court' },
+      { id: 'rowing', label: 'Aviron', prompt: 'rowing a shell on a calm river, arms mid-stroke' },
+      { id: 'judo', label: 'Judo', prompt: 'in a judo gi, mid-throw on a mat' },
+      { id: 'horse', label: 'Équitation', prompt: 'riding a horse in a paddock, hands on the reins' }
+    ],
+    selectedItems: ['running'],
+    template: 'A dynamic medium-full shot of {CHARACTER} {ITEM}, {LIGHTING}. The character is fully framed from head to knees, centered, the sport context clearly visible around him.',
+    variations: {
+      LIGHTING: ['in early morning light', 'under dramatic stadium lights', 'in golden hour glow', 'in overcast daylight', 'in cool evening light']
+    }
+  },
+  {
+    id: 'locations', name: 'Personnage dans un lieu', icon: '🏙️', mode: 'items', enabled: false, perItem: 1,
+    includeMainCharacter: true,
+    items: [
+      { id: 'street', label: 'Rue médiévale', prompt: 'in a narrow medieval cobblestone street, timber-framed houses on both sides' },
+      { id: 'desert', label: 'Désert', prompt: 'in a vast orange desert with distant mesas and endless sky' },
+      { id: 'forest', label: 'Forêt brumeuse', prompt: 'in a misty pine forest, tall dark trees fading into fog' },
+      { id: 'mountain', label: 'Sommet de montagne', prompt: 'on a mountain summit, rocky peaks and clouds below' },
+      { id: 'dock', label: 'Quai maritime', prompt: 'on a seaside dock, fishing boats moored, seagulls in the sky' },
+      { id: 'ruins', label: 'Ruines de cathédrale', prompt: 'in the ruins of a gothic cathedral, broken arches and vines' },
+      { id: 'city', label: 'Ville futuriste', prompt: 'in a vast futuristic city, neon and holographic billboards' },
+      { id: 'village', label: 'Place de village', prompt: 'in a quiet village square, old stone fountain at the center' },
+      { id: 'factory', label: 'Usine abandonnée', prompt: 'in an abandoned factory, broken windows and rusting machinery' },
+      { id: 'train', label: 'Train', prompt: 'inside a moving train carriage, window showing passing landscape' },
+      { id: 'river', label: 'Bord de rivière', prompt: 'on a riverbank at dusk, water reflecting the sky' },
+      { id: 'market', label: 'Marché', prompt: 'in a bustling outdoor market, colorful stalls and crowds' },
+      { id: 'library', label: 'Bibliothèque', prompt: 'in a grand old library, towering bookshelves and warm light' },
+      { id: 'space', label: 'Station spatiale', prompt: 'inside a space station, viewing Earth through a porthole' },
+      { id: 'arctic', label: 'Arctique', prompt: 'in an arctic landscape, ice floes and pale blue light' },
+      { id: 'jungle', label: 'Jungle', prompt: 'in a dense jungle, huge leaves and shafts of sunlight' },
+      { id: 'canyon', label: 'Canyon', prompt: 'in a deep canyon, layered red rock walls' },
+      { id: 'beach', label: 'Plage déserte', prompt: 'on a deserted beach, white sand and turquoise water' },
+      { id: 'alley', label: 'Ruelle nocturne', prompt: 'in a narrow night alley, wet cobblestones and dim lamps' },
+      { id: 'rooftop', label: "Toit d'immeuble", prompt: 'on a city rooftop, looking out at the skyline' }
+    ],
+    selectedItems: ['street', 'desert'],
+    template: '{CHARACTER} {ITEM}. {POSE}, {LIGHTING}. The environment is rich and detailed. Character clearly visible, medium-wide shot.',
+    variations: {
+      POSE: ['standing still and observing', 'walking slowly', 'lost in thought', 'waiting for something', 'looking out into the distance'],
+      LIGHTING: ['in dawn light', 'in dusk glow', 'in harsh midday sun', 'under the night stars', 'in atmospheric fog']
+    }
+  },
+  {
+    id: 'landscapes', name: 'Paysages sans personnage', icon: '🌄', mode: 'items', enabled: false, perItem: 2,
+    includeMainCharacter: false,
+    items: [
+      { id: 'hills', label: 'Collines', prompt: 'rolling green hills with a lone tree on the crest' },
+      { id: 'desert', label: 'Désert', prompt: 'a vast desert with distant mesas and heat mirages' },
+      { id: 'forest', label: 'Forêt', prompt: 'a misty pine forest with tall silhouettes' },
+      { id: 'coast', label: 'Côte', prompt: 'a rocky coastline with waves crashing on black stone' },
+      { id: 'snow', label: 'Montagnes enneigées', prompt: 'snow-capped mountain peaks under pale sky' },
+      { id: 'lake', label: 'Lac', prompt: 'a tranquil alpine lake reflecting surrounding peaks' },
+      { id: 'volcano', label: 'Plateau volcanique', prompt: 'a black volcanic plateau with glowing cracks' },
+      { id: 'canyon', label: 'Canyon', prompt: 'a deep canyon carved by an ancient river, layered red rock' },
+      { id: 'field', label: "Champ d'herbe", prompt: 'a field of tall grass swaying in the wind' },
+      { id: 'valley', label: 'Vallée brumeuse', prompt: 'a misty valley with fog rolling between mountains' }
+    ],
+    selectedItems: ['hills', 'desert'],
+    template: 'A landscape painting: {ITEM}, {ATMOSPHERE}, {LIGHTING}. {CHARACTER_NOTE} No people unless explicitly requested.',
+    variations: {
+      ATMOSPHERE: ['silent and immense', 'dreamlike and hazy', 'desolate and beautiful', 'serene and untouched', 'mysterious and brooding'],
+      LIGHTING: ['in golden hour warmth', 'in blue hour stillness', 'in harsh noon clarity', 'in dawn mist', 'in dusk afterglow']
+    }
+  },
+  {
+    id: 'interiors', name: 'Intérieurs sans personnage', icon: '🚪', mode: 'items', enabled: false, perItem: 2,
+    includeMainCharacter: false,
+    items: [
+      { id: 'library', label: 'Bibliothèque ancienne', prompt: 'an old library with towering wooden shelves and warm lamplight' },
+      { id: 'workshop', label: 'Atelier', prompt: 'a dusty workshop with scattered tools and half-finished projects' },
+      { id: 'attic', label: 'Grenier', prompt: 'a forgotten attic with cobwebs and antique furniture' },
+      { id: 'station', label: 'Gare', prompt: 'a grand train station hall with vaulted glass roof' },
+      { id: 'chapel', label: 'Chapelle', prompt: 'a small stone chapel with stained glass windows' },
+      { id: 'kitchen', label: 'Cuisine', prompt: 'a rustic kitchen at dawn with copper pots and morning light' },
+      { id: 'study', label: 'Bureau', prompt: 'a cluttered study with books, papers and a single window' },
+      { id: 'classroom', label: 'Classe', prompt: 'an empty classroom with wooden desks and blackboard' }
+    ],
+    selectedItems: ['library'],
+    template: '{ITEM}, {DETAIL}, {LIGHTING}. {CHARACTER_NOTE} The space is empty unless explicitly requested.',
+    variations: {
+      DETAIL: ['with scattered objects', 'with dust suspended in the air', 'with light streaming through a window', 'with long shadows on the floor', 'with signs of recent habitation'],
+      LIGHTING: ['in single window light', 'in candlelight', 'in cool moonlight', 'in warm late-afternoon sun']
+    }
+  },
+  {
+    id: 'animals', name: 'Animaux', icon: '🐺', mode: 'items', enabled: false, perItem: 2,
+    includeMainCharacter: false,
+    items: [
+      { id: 'cat', label: 'Chat', prompt: 'a solitary cat with tufted fur' },
+      { id: 'dog', label: 'Chien', prompt: 'a noble dog with a proud stance' },
+      { id: 'horse', label: 'Cheval', prompt: 'a lone horse with a flowing mane' },
+      { id: 'wolf', label: 'Loup', prompt: 'a lone wolf with silver-grey fur' },
+      { id: 'fox', label: 'Renard', prompt: 'a red fox with a bushy tail' },
+      { id: 'deer', label: 'Cerf', prompt: 'a stag with tall antlers' },
+      { id: 'crow', label: 'Corbeau', prompt: 'a black crow with glossy feathers' },
+      { id: 'eagle', label: 'Aigle', prompt: 'a majestic eagle in flight' },
+      { id: 'snake', label: 'Serpent', prompt: 'a coiled snake with patterned scales' },
+      { id: 'fish', label: 'Poisson', prompt: 'a luminous fish in dark water' },
+      { id: 'butterfly', label: 'Papillon', prompt: 'a brilliant butterfly with intricate wings' },
+      { id: 'owl', label: 'Hibou', prompt: 'a wise owl with bright eyes' }
+    ],
+    selectedItems: ['cat', 'wolf'],
+    template: '{ITEM}, {CONTEXT}, {LIGHTING}. {CHARACTER_NOTE}',
+    variations: {
+      CONTEXT: ['in a misty forest', 'on a city rooftop', 'in an open field', 'on a windowsill', 'at the edge of a road'],
+      LIGHTING: ['in dawn light', 'in dusk glow', 'in overcast grey', 'in moonlight']
+    }
+  },
+  {
+    id: 'vehicles', name: 'Véhicules', icon: '🚗', mode: 'items', enabled: false, perItem: 2,
+    includeMainCharacter: false,
+    items: [
+      { id: 'vintage', label: 'Voiture vintage', prompt: 'a vintage car with rounded chrome curves' },
+      { id: 'motorcycle', label: 'Moto', prompt: 'a classic motorcycle with a leather saddle' },
+      { id: 'boat', label: 'Bateau de pêche', prompt: 'a small fishing boat with weathered wood' },
+      { id: 'bicycle', label: 'Vélo', prompt: 'an old bicycle with a front basket' },
+      { id: 'truck', label: 'Camion', prompt: 'a rusty pickup truck with dented doors' },
+      { id: 'train', label: 'Locomotive', prompt: 'a steam train locomotive with brass fittings' },
+      { id: 'balloon', label: 'Montgolfière', prompt: 'a hot air balloon with colorful fabric' },
+      { id: 'sailboat', label: 'Voilier', prompt: 'a sailboat with white canvas sails' },
+      { id: 'plane', label: 'Avion', prompt: 'a small propeller plane with struts and fabric wings' },
+      { id: 'submarine', label: 'Sous-marin', prompt: 'a small submarine with a riveted hull' }
+    ],
+    selectedItems: ['vintage'],
+    template: '{ITEM}, {CONTEXT}, {LIGHTING}. {CHARACTER_NOTE}',
+    variations: {
+      CONTEXT: ['parked on a deserted road', 'moving through a landscape', 'abandoned in a field', 'silhouetted against the horizon', 'reflected in still water'],
+      LIGHTING: ['in dusk glow', 'in golden hour', 'in overcast grey', 'in moonlit night']
+    }
+  },
+  {
+    id: 'props', name: 'Objets narratifs', icon: '📜', mode: 'items', enabled: false, perItem: 2,
+    includeMainCharacter: false,
+    items: [
+      { id: 'letter', label: 'Lettre', prompt: 'an old handwritten letter on yellowed paper' },
+      { id: 'watch', label: 'Montre', prompt: 'a brass pocket watch with visible gears' },
+      { id: 'journal', label: 'Journal', prompt: 'a worn leather journal with a ribbon marker' },
+      { id: 'photo', label: 'Photographie', prompt: 'a faded black-and-white photograph with curled corners' },
+      { id: 'key', label: 'Clé', prompt: 'a large antique brass key' },
+      { id: 'compass', label: 'Boussole', prompt: 'a broken compass with a cracked glass face' },
+      { id: 'flower', label: 'Fleur', prompt: 'a single flower in a glass vase' },
+      { id: 'books', label: 'Livres', prompt: 'a stack of old leather-bound books' },
+      { id: 'magnifier', label: 'Loupe', prompt: 'a magnifying glass with a brass handle' },
+      { id: 'radio', label: 'Radio', prompt: 'an old wooden radio with round dials' }
+    ],
+    selectedItems: ['letter'],
+    template: 'Close-up of {ITEM}, {CONTEXT}, {LIGHTING}. {CHARACTER_NOTE}',
+    variations: {
+      CONTEXT: ['on a wooden table', 'in an empty room', 'held by unseen hands', 'resting on fabric', 'on dusty ground', 'beside a window'],
+      LIGHTING: ['in warm side light', 'in soft window light', 'in dramatic chiaroscuro', 'in cool moonlight']
+    }
+  }
+];
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  apiKeys: [], keyHealth: [], keyScores: [],
+  image: null, imageName: '',
+  styleImage: null, styleImageName: '',
+  categories: [],
+  results: {},
+  isRunning: false, stopRequested: false, activeRequests: 0,
+  humanLog: [], debugLog: [], plannedTotal: 0,
+  user: null,
+  presets: {},
+  charMode: 'image',
+  styleMode: 'preset',
+  keysLoadedFromDB: false
+};
+
+// ============================================================
+// UTILS
+// ============================================================
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nowTime = () => new Date().toLocaleTimeString('fr-FR', { hour12: false });
+const sanitize = t => String(t == null ? '' : t)
+  .replace(/[\u2018\u2019\u201B\u2032\u02BC]/g, "'").replace(/[\u201C\u201D\u201F\u2033]/g, '"')
+  .replace(/\u2013|\u2014/g, '-').replace(/\u2026/g, '...').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/\u00A0|\u202F/g, ' ');
+const uid = () => 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+const deepCopy = o => JSON.parse(JSON.stringify(o));
+const wordCount = s => (s || '').trim().split(/\s+/).filter(Boolean).length;
+
+// ============================================================
+// NETTOYAGE ROBUSTE
+// ============================================================
+function cleanVisionOutput(raw) {
+  if (!raw) return '';
+  let s = String(raw).trim();
+  s = s.replace(/^```[a-z]*\s*/i, '').replace(/\s*```$/i, '');
+  if (/^\s*\{[\s\S]*\}\s*$/.test(s)) {
+    try {
+      const o = JSON.parse(s);
+      s = o.description || o.text || o.style || o.result || o.answer || o.paragraph || '';
+    } catch (e) {}
+  }
+  s = s.replace(/^(Description|Style|Result|Answer|Analysis|Paragraph)\s*:\s*/i, '');
+  s = s.replace(/^["'`]+|["'`]+$/g, '');
+  s = s.replace(/\s+/g, ' ').trim();
+  return s;
+}
+
+function human(msg) {
+  state.humanLog.push({ t: nowTime(), m: msg });
+  if (state.humanLog.length > 200) state.humanLog.shift();
+  const el = $('humanLatest'); if (el) el.textContent = msg;
+  renderHuman();
+}
+function renderHuman() {
+  const el = $('humanLog'); if (!el) return;
+  el.innerHTML = state.humanLog.slice(-60).map(e => `<div><span class="t">${e.t}</span> <span class="m">${esc(e.m)}</span></div>`).join('');
+  el.scrollTop = el.scrollHeight;
+}
+function debug(msg, level = 'info') {
+  state.debugLog.push({ t: nowTime(), m: msg, c: level });
+  if (state.debugLog.length > 800) state.debugLog.shift();
+  renderDebug();
+}
+function renderDebug() {
+  const el = $('debugLog'); if (!el) return;
+  el.innerHTML = state.debugLog.slice(-300).map(e => `<div><span class="t">${e.t}</span> <span class="${e.c}">${esc(e.m)}</span></div>`).join('');
+  el.scrollTop = el.scrollHeight;
+}
+function toast(msg, type = 'success', dur = 2800) {
+  const t = $('toast');
+  t.className = `toast ${type} visible`;
+  $('toastText').textContent = msg;
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => { t.className = `toast ${type}`; }, dur);
+}
+function setStatus(txt) {
+  const b = $('statusBar');
+  if (txt) { b.classList.add('visible'); $('statusText').textContent = txt; }
+  else b.classList.remove('visible');
+}
+
+// ============================================================
+// INDEXEDDB
+// ============================================================
+const DB_NAME = 'moebius_v8_db';
+const DB_VERSION = 1;
+let dbPromise = null;
+
+function openDB() {
+  if (dbPromise) return dbPromise;
+  dbPromise = new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('users')) db.createObjectStore('users', { keyPath: 'email' });
+      if (!db.objectStoreNames.contains('configs')) db.createObjectStore('configs', { keyPath: 'email' });
+      if (!db.objectStoreNames.contains('keys')) db.createObjectStore('keys', { keyPath: 'email' });
+      if (!db.objectStoreNames.contains('gallery')) {
+        const g = db.createObjectStore('gallery', { keyPath: 'id' });
+        g.createIndex('email', 'email', { unique: false });
+      }
+      if (!db.objectStoreNames.contains('presets')) db.createObjectStore('presets', { keyPath: 'email' });
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+  return dbPromise;
+}
+
+async function dbGet(store, key) {
+  const db = await openDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).get(key);
+    req.onsuccess = () => res(req.result || null);
+    req.onerror = () => rej(req.error);
+  });
+}
+async function dbPut(store, value) {
+  const db = await openDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).put(value);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+  });
+}
+async function dbDelete(store, key) {
+  const db = await openDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).delete(key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+  });
+}
+async function dbGetAllByEmail(store, email) {
+  const db = await openDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readonly');
+    const idx = tx.objectStore(store).index('email');
+    const req = idx.getAll(email);
+    req.onsuccess = () => res(req.result || []);
+    req.onerror = () => rej(req.error);
+  });
+}
+
+// ============================================================
+// AUTH
+// ============================================================
+function simpleHash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
+  return 'h' + (h >>> 0).toString(16);
+}
+
+async function registerUser(email, pin) {
+  email = email.trim().toLowerCase();
+  if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) throw new Error('Email invalide');
+  if (!/^\d{4}$/.test(pin)) throw new Error('PIN doit être 4 chiffres');
+  const existing = await dbGet('users', email);
+  if (existing) throw new Error('Cet email existe déjà');
+  await dbPut('users', { email, pinHash: simpleHash(pin), createdAt: Date.now() });
+  return { email };
+}
+
+async function loginUser(email, pin) {
+  email = email.trim().toLowerCase();
+  const u = await dbGet('users', email);
+  if (!u) throw new Error('Utilisateur inconnu');
+  if (u.pinHash !== simpleHash(pin)) throw new Error('PIN incorrect');
+  return { email };
+}
+
+async function setUserSession(user) {
+  state.user = user;
+  if (user) {
+    sessionStorage.setItem('moebius_user', JSON.stringify(user));
+    await loadUserData(user.email);
+    $('authLoggedOut').classList.add('hidden');
+    $('authLoggedIn').classList.remove('hidden');
+    $('authWho').textContent = user.email;
+    $('authBadge').textContent = 'connecté';
+    $('authStatus').className = 'status ok';
+    $('authStatusText').textContent = 'Connecté';
+    human(`👤 Connecté : ${user.email}`);
+  } else {
+    sessionStorage.removeItem('moebius_user');
+    $('authLoggedOut').classList.remove('hidden');
+    $('authLoggedIn').classList.add('hidden');
+    $('authBadge').textContent = 'non connecté';
+    human('👤 Déconnecté.');
+  }
+  updateUI();
+  renderGallery();
+}
+
+async function loadUserData(email) {
+  // Clés — validées automatiquement depuis la BDD si présente
+  const keysDoc = await dbGet('keys', email);
+  if (keysDoc && keysDoc.raw && keysDoc.raw.trim()) {
+    $('keysInput').value = keysDoc.raw;
+    // Auto-validation silencieuse
+    await autoValidateStoredKeys();
+  }
+  // Config
+  const cfg = await dbGet('configs', email);
+  if (cfg) {
+    if (cfg.charDesc) { $('charDescInput').value = cfg.charDesc; updateCharLen(); }
+    if (cfg.styleKey && STYLE_PRESETS[cfg.styleKey]) {
+      $('styleSelect').value = cfg.styleKey;
+      $('styleInput').value = STYLE_PRESETS[cfg.styleKey].prompt;
+    } else if (cfg.styleCustom) {
+      $('styleInput').value = cfg.styleCustom;
+    }
+    if (Array.isArray(cfg.categories) && cfg.categories.length) {
+      state.categories = cfg.categories;
+    }
+  }
+  // Presets
+  const presets = await dbGet('presets', email);
+  if (presets && presets.data) {
+    state.presets = presets.data;
+  } else {
+    state.presets = deepCopy(PRESET_DEFAULTS);
+  }
+  applyPresetsToTextareas();
+  rebuildStyleSelect();
+  renderCategories();
+  updateUI();
+}
+
+async function saveUserData() {
+  if (!state.user) return;
+  const email = state.user.email;
+  await dbPut('configs', {
+    email,
+    charDesc: $('charDescInput').value,
+    styleKey: $('styleSelect').value,
+    styleCustom: $('styleInput').value,
+    categories: state.categories
+  });
+  await dbPut('keys', { email, raw: $('keysInput').value });
+  await dbPut('presets', { email, data: state.presets });
+}
+
+// ============================================================
+// GALERIE
+// ============================================================
+async function addToGallery(url, meta) {
+  if (!state.user) return;
+  const id = uid();
+  await dbPut('gallery', { id, email: state.user.email, url, createdAt: Date.now(), catName: meta.catName || '', prompt: String(meta.prompt || ''), sourceImage: meta.sourceImage || null, style: meta.style || $('styleInput').value || '', updatedAt: Date.now() });
+  renderGallery();
+}
+
+async function renderGallery() {
+  const grid = $('galleryGrid');
+  if (!state.user) {
+    grid.innerHTML = '<p class="hint">Connectez-vous pour voir votre galerie.</p>';
+    $('galleryBadge').textContent = '0';
+    return;
+  }
+  const items = await dbGetAllByEmail('gallery', state.user.email);
+  items.sort((a, b) => b.createdAt - a.createdAt);
+  $('galleryBadge').textContent = String(items.length);
+  if (items.length === 0) {
+    grid.innerHTML = '<p class="hint">Aucune image encore.</p>';
+    return;
+  }
+  grid.innerHTML = items.map(it => `
+    <div class="gitem" data-gid="${it.id}" title="Cliquer pour afficher le prompt et créer une variante">
+      <img src="${it.url}" loading="lazy" alt="">
+      <button class="rm" data-grm="${it.id}" title="Supprimer" type="button">✕</button>
+    </div>
+  `).join('');
+  grid.querySelectorAll('[data-grm]').forEach(btn => {
+    btn.onclick = async (e) => {
+      e.stopPropagation();
+      if (!confirm('Supprimer ?')) return;
+      await dbDelete('gallery', btn.dataset.grm);
+      renderGallery();
+    };
+  });
+  grid.querySelectorAll('[data-gid]').forEach(el => {
+    el.onclick = (e) => { if (e.target.closest('[data-grm]')) return; const it = items.find(i => i.id === el.dataset.gid); if (it) openImageEditor(it); };
+  });
+}
+
+// ============================================================
+// ÉDITION D'IMAGE : analyse visuelle -> prompt texte -> nouvelle génération
+// (aucune requête img2img)
+let editingGalleryItem = null;
+let editSourceUrl = null;
+function setEditStatus(message, type='') {
+  $('editStatus').className = 'status ' + type;
+  $('editStatusText').textContent = message;
+}
+function openImageEditor(item) {
+  editingGalleryItem = item;
+  editSourceUrl = item.url;
+  $('editSourcePreview').src = item.url;
+  $('editSourceInfo').textContent = `${item.catName || 'Image'} · prompt complet conservé`;
+  $('editPrompt').value = item.prompt || '';
+  $('editReferenceFile').value = '';
+  $('imageEditorModal').classList.remove('hidden');
+  setEditStatus(item.prompt ? 'Prompt récupéré. Modifiez-le puis générez.' : 'Aucun prompt enregistré pour cette image.');
+}
+async function analyzeImageToText(url) {
+  return await apiVision(
+    'You are a precise visual analyst preparing a text-to-image prompt. Describe only visible facts: subject, appearance, clothing, pose, objects, environment, palette, light, composition, medium and texture. Do not invent uncertain details. Return one detailed English paragraph.',
+    'Analyze this image so a new image can be recreated from text alone. Preserve concrete visual details and distinguish subject from style.',
+    url, {minWords:70,maxTokens:1000,temperature:0}
+  );
+}
+async function createEditedImage() {
+  const userPrompt = $('editPrompt').value.trim();
+  if (!userPrompt) return toast('Saisissez un prompt.', 'error');
+  const file = $('editReferenceFile').files?.[0];
+  const btn = $('editGenerate'); btn.disabled = true;
+  try {
+    let referenceDescription = '';
+    if (file) {
+      setEditStatus('Lecture de la photo de référence par le modèle vision…', 'loading');
+      const rawDataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('Lecture de la photo impossible'));
+        reader.readAsDataURL(file);
+      });
+      const dataUrl = await compressImg(rawDataUrl, 1600);
+      referenceDescription = await analyzeImageToText(dataUrl);
+    } else if (editingGalleryItem?.url && $('editPrompt').dataset.analyzeSource === '1') {
+      setEditStatus('Analyse de l’image source en texte…', 'loading');
+      referenceDescription = await analyzeImageToText(editingGalleryItem.url);
+    }
+    const finalPrompt = [
+      'USER CREATIVE INSTRUCTION: ' + userPrompt,
+      referenceDescription ? 'REFERENCE IMAGE ANALYSIS (text only; preserve relevant visible features): ' + referenceDescription : '',
+      'ART DIRECTION: ' + ($('styleInput').value.trim() || STYLE_PRESETS[DEFAULT_STYLE_KEY].prompt),
+      'STYLE PRIORITY: the chosen style must visibly control medium, linework/brushwork, palette, shapes, texture, lighting and composition across the entire image. Avoid generic default rendering.',
+      'COMPOSITION: coherent subject, scene, light and framing; no watermark or unintended text.'
+    ].filter(Boolean).join('\n\n');
+    setEditStatus('Génération text-to-image en cours…', 'loading');
+    const url = await apiImageGenerate(finalPrompt);
+    await addToGallery(url, {catName:'Variante',prompt:finalPrompt,sourceImage:file ? null : editingGalleryItem?.url || null,style:$('styleInput').value});
+    $('editSourcePreview').src = url;
+    $('editSourceInfo').textContent = 'Nouvelle variante créée et enregistrée dans votre galerie.';
+    $('editPrompt').value = finalPrompt;
+    setEditStatus('Image générée et prompt complet sauvegardé.', 'ok');
+    toast('Nouvelle image ajoutée à la galerie.', 'success');
+  } catch(e) {
+    setEditStatus('Échec : ' + (e.message || 'erreur inconnue'), 'err');
+    debug('Édition image : ' + (e.message || e), 'err');
+  } finally { btn.disabled = false; }
+}
+
+// ============================================================
+// PRESETS → TEXTAREAS + SELECT
+// ============================================================
+function applyPresetsToTextareas() {
+  const map = {
+    cfgPhotographers: 'photographers',
+    cfgPainters: 'painters',
+    cfgStyles: 'styles',
+    cfgAnimations: 'animations',
+    cfgMangas: 'mangas',
+    cfgComics: 'comics',
+    cfgModern: 'modern',
+    cfgFilmTypes: 'filmTypes',
+    cfgPosters: 'posters'
+  };
+  for (const [elId, key] of Object.entries(map)) {
+    const el = $(elId);
+    if (el) el.value = state.presets[key] || '';
+  }
+}
+
+function readPresetsFromTextareas() {
+  state.presets = {
+    photographers: $('cfgPhotographers').value,
+    painters: $('cfgPainters').value,
+    styles: $('cfgStyles').value,
+    animations: $('cfgAnimations').value,
+    mangas: $('cfgMangas').value,
+    comics: $('cfgComics').value,
+    modern: $('cfgModern').value,
+    filmTypes: $('cfgFilmTypes').value,
+    posters: $('cfgPosters').value
+  };
+}
+
+function parsePresetLines(text) {
+  if (!text) return [];
+  return text.split('\n').map(l => l.trim()).filter(Boolean).map((line, i) => {
+    const parts = line.split('—');
+    const name = (parts[0] || line).trim();
+    const desc = (parts[1] || '').trim();
+    const key = 'p_' + name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + i;
+    return { key, label: name, prompt: desc ? `${name} — ${desc}` : name };
+  });
+}
+
+function rebuildStyleSelect() {
+  const sel = $('styleSelect');
+  const prevValue = sel.value;
+  const groups = [
+    { label: '— Styles de base —', items: Object.entries(STYLE_PRESETS).map(([k, v]) => ({ key: k, label: v.label, prompt: v.prompt })) },
+    { label: '— Styles célèbres —', items: parsePresetLines(state.presets.styles) },
+    { label: '— Photographes —', items: parsePresetLines(state.presets.photographers) },
+    { label: '— Peintres —', items: parsePresetLines(state.presets.painters) },
+    { label: '— Animation —', items: parsePresetLines(state.presets.animations) },
+    { label: '— Mangas —', items: parsePresetLines(state.presets.mangas) },
+    { label: '— Comics —', items: parsePresetLines(state.presets.comics) },
+    { label: '— Peintres modernes —', items: parsePresetLines(state.presets.modern) },
+    { label: '— Types de film —', items: parsePresetLines(state.presets.filmTypes) },
+    { label: '— Affiches —', items: parsePresetLines(state.presets.posters) }
+  ];
+  let html = '';
+  let found = false;
+  for (const g of groups) {
+    if (!g.items.length) continue;
+    html += `<optgroup label="${esc(g.label)}">`;
+    for (const it of g.items) {
+      if (it.key === prevValue) found = true;
+      html += `<option value="${esc(it.key)}" ${it.key === prevValue ? 'selected' : ''}>${esc(it.label)}</option>`;
+    }
+    html += '</optgroup>';
+  }
+  sel.innerHTML = html;
+  if (!found) {
+    sel.value = DEFAULT_STYLE_KEY;
+    if (!$('styleInput').value.trim()) $('styleInput').value = STYLE_PRESETS[DEFAULT_STYLE_KEY].prompt;
+  }
+}
+
+function findPresetByKey(key) {
+  if (STYLE_PRESETS[key]) return STYLE_PRESETS[key];
+  const all = [
+    ...parsePresetLines(state.presets.styles),
+    ...parsePresetLines(state.presets.photographers),
+    ...parsePresetLines(state.presets.painters),
+    ...parsePresetLines(state.presets.animations),
+    ...parsePresetLines(state.presets.mangas),
+    ...parsePresetLines(state.presets.comics),
+    ...parsePresetLines(state.presets.modern),
+    ...parsePresetLines(state.presets.filmTypes),
+    ...parsePresetLines(state.presets.posters)
+  ];
+  return all.find(p => p.key === key) || null;
+}
+
+// ============================================================
+// KEY SYSTEM
+// ============================================================
+function isValidKey(k) { return typeof k === 'string' && k.startsWith('sk-') && k.length >= 15; }
+
+async function quickPing(key) {
+  try {
+    const res = await fetch(API_BASE + '/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: MODEL_TEXT, messages: [{ role: 'user', content: 'ok' }], max_tokens: 1 })
+    });
+    return res.status !== 401 && res.status !== 403;
+  } catch (e) { return null; }
+}
+
+async function validateAndSaveKeys(showToast = true) {
+  const rawText = $('keysInput').value;
+  const raw = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0).filter(l => isValidKey(l));
+  if (raw.length === 0) { if (showToast) toast('Aucune clé valide (sk-...)', 'error'); return; }
+
+  $('validateBtn').disabled = true;
+  $('validateBtn').textContent = '⚡ Validation…';
+  $('keyStatus').className = 'status loading';
+  $('keyStatusText').textContent = 'Test en cours…';
+
+  const results = await Promise.allSettled(raw.map(k => quickPing(k)));
+  state.apiKeys = []; state.keyHealth = []; state.keyScores = [];
+  let networkErr = false, rejected = 0;
+
+  results.forEach((r, i) => {
+    if (r.status === 'fulfilled' && r.value === true) {
+      state.apiKeys.push(raw[i]);
+      state.keyHealth.push({ dead: false, lastSuccess: Date.now(), last429: 0, consecutiveErrors: 0 });
+      state.keyScores.push(100);
+    } else if (r.status === 'fulfilled' && r.value === false) {
+      rejected++;
+    } else { networkErr = true; }
+  });
+
+  $('validateBtn').disabled = false;
+  $('validateBtn').textContent = '⚡ Valider et sauvegarder';
+
+  if (state.apiKeys.length > 0) {
+    $('keyBadge').textContent = `${state.apiKeys.length} clé${state.apiKeys.length > 1 ? 's' : ''}`;
+    $('keyStatus').className = 'status ok';
+    $('keyStatusText').textContent = `${state.apiKeys.length} clé(s) prête(s)`;
+    if (showToast) toast(`✓ ${state.apiKeys.length} clé(s)`, 'success');
+    await saveUserData();
+    state.keysLoadedFromDB = true;
+  } else {
+    $('keyBadge').textContent = '0 clé';
+    $('keyStatus').className = 'status err';
+    $('keyStatusText').textContent = networkErr ? 'Erreur réseau' : `${rejected} rejetée(s)`;
+    if (showToast) toast('Aucune clé active', 'error');
+  }
+  renderKeysPanel(); updateUI();
+}
+
+async function autoValidateStoredKeys() {
+  if (state.keysLoadedFromDB) return;
+  await validateAndSaveKeys(false);
+  state.keysLoadedFromDB = true;
+}
+
+function renderKeysPanel() {
+  $('keysPanel').innerHTML = state.apiKeys.map((k, i) => {
+    const h = state.keyHealth[i];
+    const cls = h && h.consecutiveErrors >= 3 ? 'dead' : (h && h.last429 > 0 ? 'slow' : '');
+    return `<div class="key-chip ${cls}"><span class="dot"></span>key-${i+1} [${k.slice(0,8)}…]</div>`;
+  }).join('');
+}
+
+function getBestKey() {
+  if (state.apiKeys.length === 0) return null;
+  let bestIdx = 0, bestScore = -Infinity;
+  for (let i = 0; i < state.apiKeys.length; i++) {
+    const h = state.keyHealth[i];
+    if (h.dead) continue;
+    let score = state.keyScores[i] || 100;
+    if (h.consecutiveErrors > 0) score -= h.consecutiveErrors * 15;
+    if (h.last429 && Date.now() - h.last429 < 60000) score -= 40;
+    if (Date.now() - h.lastSuccess < 10000) score += 20;
+    if (score > bestScore) { bestScore = score; bestIdx = i; }
+  }
+  return { key: state.apiKeys[bestIdx], idx: bestIdx };
+}
+function markKeySuccess(idx) {
+  state.keyHealth[idx].consecutiveErrors = 0;
+  state.keyHealth[idx].lastSuccess = Date.now();
+  state.keyScores[idx] = Math.min(100, (state.keyScores[idx] || 50) + 5);
+}
+function markKeyFail(idx, is429) {
+  state.keyHealth[idx].consecutiveErrors++;
+  if (is429) state.keyHealth[idx].last429 = Date.now();
+  state.keyScores[idx] = Math.max(0, (state.keyScores[idx] || 50) - 10);
+  if (state.keyHealth[idx].consecutiveErrors >= 5) state.keyHealth[idx].dead = true;
+  renderKeysPanel();
+}
+
+// ============================================================
+// IMAGE HANDLING
+// ============================================================
+function compressImg(dataUrl, maxSide) {
+  return new Promise(res => {
+    const img = new Image();
+    img.onload = () => {
+      let { width: w, height: h } = img;
+      const s = Math.min(1, maxSide / Math.max(w, h));
+      w = Math.round(w * s); h = Math.round(h * s);
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const x = c.getContext('2d');
+      x.fillStyle = '#fff'; x.fillRect(0, 0, w, h);
+      x.drawImage(img, 0, 0, w, h);
+      res(c.toDataURL('image/jpeg', 0.95));
+    };
+    img.onerror = () => res(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+async function handleCharImage(file) {
+  if (!file || !file.type.startsWith('image/')) return toast('Fichier invalide', 'error');
+  const dataUrl = await new Promise((res) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.readAsDataURL(file);
+  });
+  state.image = await compressImg(dataUrl, 1600);
+  state.imageName = file.name;
+  refreshCharSlot();
+  human(`📷 Image personnage : ${file.name}`);
+}
+
+async function handleStyleImage(file) {
+  if (!file || !file.type.startsWith('image/')) return toast('Fichier invalide', 'error');
+  const dataUrl = await new Promise((res) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.readAsDataURL(file);
+  });
+  state.styleImage = await compressImg(dataUrl, 1600);
+  state.styleImageName = file.name;
+  refreshStyleSlot();
+  human(`🎨 Image style : ${file.name}`);
+}
+
+function refreshCharSlot() {
+  const grid = $('imagesGrid');
+  grid.innerHTML = '';
+  if (state.image) {
+    const slot = document.createElement('div');
+    slot.className = 'slot filled';
+    slot.innerHTML = `<button class="rm" data-rm title="Retirer" type="button">✕</button><img src="${state.image}" alt="">`;
+    grid.appendChild(slot);
+    slot.querySelector('[data-rm]').onclick = (e) => {
+      e.stopPropagation();
+      state.image = null; state.imageName = '';
+      refreshCharSlot();
+    };
+  } else {
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    slot.innerHTML = `<input type="file" accept="image/*" id="fileInput"><div class="icon">＋</div><div class="txt">Choisir une image</div>`;
+    grid.appendChild(slot);
+    slot.querySelector('#fileInput').onchange = (e) => {
+      const f = e.target.files[0];
+      if (f) handleCharImage(f);
+      e.target.value = '';
+    };
+  }
+  updateCharBadge();
+  updateUI();
+}
+
+function refreshStyleSlot() {
+  const grid = $('styleImagesGrid');
+  grid.innerHTML = '';
+  if (state.styleImage) {
+    const slot = document.createElement('div');
+    slot.className = 'slot filled';
+    slot.innerHTML = `<button class="rm" data-rm title="Retirer" type="button">✕</button><img src="${state.styleImage}" alt="">`;
+    grid.appendChild(slot);
+    slot.querySelector('[data-rm]').onclick = (e) => {
+      e.stopPropagation();
+      state.styleImage = null; state.styleImageName = '';
+      refreshStyleSlot();
+    };
+  } else {
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    slot.innerHTML = `<input type="file" accept="image/*" id="styleFileInput"><div class="icon">＋</div><div class="txt">Image de style</div>`;
+    grid.appendChild(slot);
+    slot.querySelector('#styleFileInput').onchange = (e) => {
+      const f = e.target.files[0];
+      if (f) handleStyleImage(f);
+      e.target.value = '';
+    };
+  }
+  updateUI();
+}
+
+function updateCharBadge() {
+  const hasImg = !!state.image;
+  const hasTxt = $('charDescInput').value.trim().length > 0;
+  let label = '0 source';
+  if (hasImg && hasTxt) label = 'image + texte';
+  else if (hasImg) label = '1 image';
+  else if (hasTxt) label = '1 texte';
+  $('refBadge').textContent = label;
+}
+
+// ============================================================
+// CONCURRENCE
+// ============================================================
+async function acquireSlot() {
+  while (state.activeRequests >= MAX_CONCURRENT) await sleep(80);
+  state.activeRequests++;
+}
+function releaseSlot() { state.activeRequests = Math.max(0, state.activeRequests - 1); }
+
+// ============================================================
+// API VISION
+// ============================================================
+async function apiVision(system, user, imageUrl, opts = {}) {
+  const minWords = opts.minWords || 100;
+  const maxTokens = opts.maxTokens || 900;
+  const temperature = opts.temperature !== undefined ? opts.temperature : 0;
+
+  await acquireSlot();
+  let lastText = '';
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (state.stopRequested) { releaseSlot(); throw new Error('Stop'); }
+    const bk = getBestKey();
+    if (!bk) { releaseSlot(); throw new Error('Aucune clé active'); }
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), VISION_TIMEOUT);
+    try {
+      const res = await fetch(API_BASE + '/chat/completions', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${bk.key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: MODEL_TEXT,
+          messages: [
+            { role: 'system', content: sanitize(system) },
+            { role: 'user', content: [{ type: 'text', text: sanitize(user) }, { type: 'image_url', image_url: { url: imageUrl } }] }
+          ],
+          temperature, max_tokens: maxTokens
+        }),
+        signal: controller.signal
+      });
+      clearTimeout(tid);
+      if (res.status === 401 || res.status === 403) { markKeyFail(bk.idx, false); await sleep(400); continue; }
+      if (res.status === 429) { markKeyFail(bk.idx, true); await sleep(ADAPTIVE_DELAY * (attempt + 1)); continue; }
+      if (!res.ok) { markKeyFail(bk.idx, false); await sleep(1500 * (attempt + 1)); continue; }
+      markKeySuccess(bk.idx);
+      const d = await res.json();
+      const content = d.choices?.[0]?.message?.content;
+      if (!content) { await sleep(600); continue; }
+      const cleaned = cleanVisionOutput(content);
+      const wc = wordCount(cleaned);
+      debug(`Vision reçue : ${wc} mots (min ${minWords})`, wc >= minWords ? 'ok' : 'warn');
+      lastText = cleaned;
+      if (wc >= minWords) { releaseSlot(); return cleaned; }
+      await sleep(600);
+    } catch (e) {
+      clearTimeout(tid);
+      if (e.name === 'AbortError') { markKeyFail(bk.idx, false); await sleep(800 * (attempt + 1)); continue; }
+      if (attempt === MAX_ATTEMPTS - 1) { releaseSlot(); throw e; }
+      await sleep(800 * (attempt + 1));
+    }
+  }
+  releaseSlot();
+  if (lastText && wordCount(lastText) >= 30) return lastText;
+  throw new Error('Réponse vision trop courte après plusieurs essais');
+}
+
+async function apiTextCompletion(system, user, opts = {}) {
+  const minWords = opts.minWords || 60;
+  const maxTokens = opts.maxTokens || 1200;
+
+  await acquireSlot();
+  let lastText = '';
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (state.stopRequested) { releaseSlot(); throw new Error('Stop'); }
+    const bk = getBestKey();
+    if (!bk) { releaseSlot(); throw new Error('Aucune clé active'); }
+    try {
+      const res = await fetch(API_BASE + '/chat/completions', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${bk.key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: MODEL_TEXT,
+          messages: [{ role: 'system', content: sanitize(system) }, { role: 'user', content: sanitize(user) }],
+          temperature: 0.4, max_tokens: maxTokens
+        })
+      });
+      if (res.status === 401 || res.status === 403) { markKeyFail(bk.idx, false); await sleep(400); continue; }
+      if (res.status === 429) { markKeyFail(bk.idx, true); await sleep(ADAPTIVE_DELAY * (attempt + 1)); continue; }
+      if (!res.ok) { markKeyFail(bk.idx, false); await sleep(1500 * (attempt + 1)); continue; }
+      markKeySuccess(bk.idx);
+      const d = await res.json();
+      const content = d.choices?.[0]?.message?.content;
+      if (!content) { await sleep(600); continue; }
+      const cleaned = content.trim();
+      lastText = cleaned;
+      if (wordCount(cleaned) >= minWords) { releaseSlot(); return cleaned; }
+      await sleep(600);
+    } catch (e) {
+      if (attempt === MAX_ATTEMPTS - 1) { releaseSlot(); throw e; }
+      await sleep(800 * (attempt + 1));
+    }
+  }
+  releaseSlot();
+  if (lastText) return lastText;
+  throw new Error('Réponse texte vide');
+}
+
+// ============================================================
+// API IMAGE
+// ============================================================
+async function apiImageGenerate(prompt) {
+  await acquireSlot();
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (state.stopRequested) { releaseSlot(); throw new Error('Stop'); }
+    const bk = getBestKey();
+    if (!bk) { releaseSlot(); throw new Error('Aucune clé active'); }
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), IMAGE_TIMEOUT);
+    try {
+      const res = await fetch(API_BASE + '/images/generations', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${bk.key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: MODEL_IMAGE, prompt: sanitize(prompt), size: IMAGE_SIZE, n: 1,
+          extra_body: { response_format: 'url' }
+        }),
+        signal: controller.signal
+      });
+      clearTimeout(tid);
+      if (res.status === 401 || res.status === 403) { markKeyFail(bk.idx, false); await sleep(400); continue; }
+      if (res.status === 429 || res.status === 503) { markKeyFail(bk.idx, true); await sleep(Math.min(20000, ADAPTIVE_DELAY * Math.pow(2, attempt))); continue; }
+      if (!res.ok) {
+        markKeyFail(bk.idx, false);
+        if (attempt === MAX_ATTEMPTS - 1) { releaseSlot(); throw new Error(`HTTP ${res.status}`); }
+        await sleep(2000 * (attempt + 1)); continue;
+      }
+      markKeySuccess(bk.idx);
+      const d = await res.json();
+      const item = d.data?.[0];
+      if (item?.url) { releaseSlot(); return item.url; }
+      if (item?.b64_json) { releaseSlot(); return `data:image/png;base64,${item.b64_json}`; }
+      markKeyFail(bk.idx, false); await sleep(1500);
+    } catch (e) {
+      clearTimeout(tid);
+      if (e.name === 'AbortError') { markKeyFail(bk.idx, true); await sleep(3000 * (attempt + 1)); continue; }
+      if (attempt === MAX_ATTEMPTS - 1) { releaseSlot(); throw e; }
+      await sleep(2000 * (attempt + 1));
+    }
+  }
+  releaseSlot(); throw new Error('Échec génération');
+}
+
+// ============================================================
+// INIT CATEGORIES
+// ============================================================
+function initCategories() {
+  state.categories = DEFAULT_CATEGORIES.map(c => ({
+    ...deepCopy(c),
+    enabled: c.enabled === true,
+    count: c.count || 5,
+    perItem: c.perItem || 1,
+    selectedItems: (c.selectedItems || []).slice(),
+    includeMainCharacter: c.includeMainCharacter !== false
+  }));
+}
+
+// ============================================================
+// RENDER CATEGORIES
+// ============================================================
+function renderCategories() {
+  const root = $('categoriesList');
+  root.innerHTML = '';
+
+  for (const cat of state.categories) {
+    const div = document.createElement('div');
+    div.className = 'category' + (cat.enabled ? ' enabled' : '');
+    div.dataset.id = cat.id;
+
+    let itemsSection = '';
+    let countSection = '';
+
+    if (cat.mode === 'items') {
+      const items = cat.items.map(item => {
+        const checked = cat.selectedItems.includes(item.id);
+        const rmBtn = item.isCustom ? `<button class="item-rm" data-rmitem="${item.id}" title="Supprimer" type="button">✕</button>` : '';
+        return `<label class="item-check${checked ? ' on' : ''}"><input type="checkbox" ${checked ? 'checked' : ''} data-item="${item.id}"><span>${esc(item.label)}</span>${rmBtn}</label>`;
+      }).join('');
+      itemsSection = `
+        <div class="items-section">
+          <div class="items-label">Éléments (${cat.selectedItems.length}/${cat.items.length}) :</div>
+          <div class="items-grid">${items}</div>
+          <button class="add-item-btn" data-additem type="button">＋ Ajouter un élément</button>
+        </div>`;
+      countSection = `<input type="number" class="cat-count" value="${cat.perItem}" min="1" max="20" data-count><span>img/élément</span>`;
+    } else {
+      countSection = `<input type="number" class="cat-count" value="${cat.count}" min="1" max="100" data-count><span>images</span>`;
+    }
+
+    const comboCount = getCombinationCount(cat);
+    const totalImgs = computeTotalImages(cat);
+    const mainCharBox = `<label class="item-check${cat.includeMainCharacter ? ' on' : ''}" style="margin-left:.4rem;"><input type="checkbox" ${cat.includeMainCharacter ? 'checked' : ''} data-mainchar><span>Personnage</span></label>`;
+
+    div.innerHTML = `
+      <div class="cat-head">
+        <label class="cat-check">
+          <input type="checkbox" ${cat.enabled ? 'checked' : ''} data-toggle>
+          <span class="cat-icon">${cat.icon}</span>
+          <span class="cat-name">${esc(cat.name)}</span>
+        </label>
+        <div class="cat-count-wrap">${countSection}${mainCharBox}</div>
+      </div>
+      ${itemsSection}
+      <textarea class="cat-desc" data-template>${esc(cat.template)}</textarea>
+      <div class="cat-meta">
+        <span class="combos">${comboCount.toLocaleString('fr-FR')} combinaisons</span>
+        <span class="total-badge">→ ${totalImgs} image${totalImgs > 1 ? 's' : ''}</span>
+        <button class="cat-preview-btn" data-preview type="button">👁 Prompt</button>
+        <button class="cat-preview-btn" data-delcat type="button" style="border-color:var(--err);color:var(--err);">✕</button>
+      </div>
+      <div class="cat-preview" data-previewbox></div>
+    `;
+    root.appendChild(div);
+
+    div.querySelector('[data-toggle]').onchange = e => {
+      cat.enabled = e.target.checked;
+      div.classList.toggle('enabled', cat.enabled);
+      updatePlannerSummary(); updateUI(); saveUserData();
+    };
+    div.querySelector('[data-mainchar]').onchange = e => {
+      cat.includeMainCharacter = e.target.checked;
+      e.target.closest('.item-check').classList.toggle('on', e.target.checked);
+      saveUserData();
+    };
+    div.querySelector('[data-count]').oninput = e => {
+      const max = cat.mode === 'items' ? 20 : 100;
+      const v = Math.max(1, Math.min(max, parseInt(e.target.value) || 1));
+      if (cat.mode === 'items') cat.perItem = v; else cat.count = v;
+      div.querySelector('.total-badge').textContent = `→ ${computeTotalImages(cat)} image${computeTotalImages(cat) > 1 ? 's' : ''}`;
+      updatePlannerSummary(); saveUserData();
+    };
+    div.querySelector('[data-template]').oninput = e => {
+      cat.template = e.target.value;
+      div.querySelector('.combos').textContent = `${getCombinationCount(cat).toLocaleString('fr-FR')} combinaisons`;
+      saveUserData();
+    };
+    div.querySelectorAll('[data-item]').forEach(input => {
+      input.onchange = e => {
+        const id = e.target.dataset.item;
+        const label = input.closest('.item-check');
+        if (e.target.checked) {
+          if (!cat.selectedItems.includes(id)) cat.selectedItems.push(id);
+          label.classList.add('on');
+        } else {
+          cat.selectedItems = cat.selectedItems.filter(x => x !== id);
+          label.classList.remove('on');
+        }
+        div.querySelector('.items-label').textContent = `Éléments (${cat.selectedItems.length}/${cat.items.length}) :`;
+        div.querySelector('.total-badge').textContent = `→ ${computeTotalImages(cat)} image${computeTotalImages(cat) > 1 ? 's' : ''}`;
+        updatePlannerSummary(); saveUserData();
+      };
+    });
+    div.querySelectorAll('[data-rmitem]').forEach(btn => {
+      btn.onclick = e => {
+        e.preventDefault(); e.stopPropagation();
+        if (!confirm('Supprimer cet élément ?')) return;
+        const id = btn.dataset.rmitem;
+        cat.items = cat.items.filter(i => i.id !== id);
+        cat.selectedItems = cat.selectedItems.filter(x => x !== id);
+        renderCategories(); saveUserData();
+      };
+    });
+    const addBtn = div.querySelector('[data-additem]');
+    if (addBtn) {
+      addBtn.onclick = () => {
+        const label = prompt("Label de l'élément :");
+        if (!label || !label.trim()) return;
+        const promptText = prompt("Description (anglais) :", label);
+        if (!promptText || !promptText.trim()) return;
+        const id = uid();
+        cat.items.push({ id, label: label.trim(), prompt: promptText.trim(), isCustom: true });
+        cat.selectedItems.push(id);
+        renderCategories(); saveUserData();
+      };
+    }
+    div.querySelector('[data-preview]').onclick = () => {
+      const box = div.querySelector('[data-previewbox]');
+      if (box.classList.contains('visible')) { box.classList.remove('visible'); return; }
+      const charDesc = $('charDescInput').value.trim() || 'the person described';
+      box.textContent = buildPreviewPrompt(cat, charDesc);
+      box.classList.add('visible');
+    };
+    div.querySelector('[data-delcat]').onclick = () => {
+      if (!confirm(`Supprimer la catégorie "${cat.name}" ?`)) return;
+      state.categories = state.categories.filter(c => c.id !== cat.id);
+      renderCategories(); saveUserData();
+    };
+  }
+  updatePlannerSummary();
+}
+
+function addNewCategory() {
+  const name = prompt('Nom de la catégorie :');
+  if (!name || !name.trim()) return;
+  const icon = prompt('Icône (emoji) :', '🎬') || '🎬';
+  const id = uid();
+  state.categories.push({
+    id, name: name.trim(), icon, mode: 'variations', enabled: true, count: 4,
+    includeMainCharacter: true,
+    template: 'A scene of {CHARACTER}. {MOOD}, {SETTING}, {LIGHTING}.',
+    variations: {
+      MOOD: ['peaceful', 'tense', 'joyful', 'melancholic'],
+      SETTING: ['in a room', 'outdoors', 'in a city', 'in nature'],
+      LIGHTING: ['warm light', 'cool light', 'soft light', 'dramatic light']
+    }
+  });
+  renderCategories(); saveUserData();
+  human(`＋ Catégorie "${name}" créée.`);
+}
+
+// ============================================================
+// COMPTAGE
+// ============================================================
+function getCombinationCount(cat) {
+  if (!cat.template) return 0;
+  const matches = [...cat.template.matchAll(/{([A-Z_0-9]+)}/g)];
+  const slots = [...new Set(matches.map(m => m[1]))].filter(s => s !== 'CHARACTER' && s !== 'ITEM' && s !== 'CHARACTER_NOTE' && cat.variations && cat.variations[s]);
+  let count = 1;
+  for (const slot of slots) count *= cat.variations[slot].length;
+  if (cat.mode === 'items' && cat.template.includes('{ITEM}')) count *= Math.max(1, cat.selectedItems.length);
+  return count;
+}
+
+function computeTotalImages(cat) {
+  if (!cat.enabled) return 0;
+  if (cat.mode === 'items') return cat.selectedItems.length * (cat.perItem || 1);
+  return cat.count || 0;
+}
+
+function updatePlannerSummary() {
+  const active = state.categories.filter(c => c.enabled);
+  const total = active.reduce((s, c) => s + computeTotalImages(c), 0);
+  state.plannedTotal = total;
+  const el = $('plannerSummary');
+  el.innerHTML = active.length === 0
+    ? 'Aucune catégorie active.'
+    : `<strong>${active.length}</strong> catégorie(s) · <strong>${total}</strong> image(s) au total`;
+  $('plannerBadge').textContent = `${total} image${total > 1 ? 's' : ''}`;
+  updateUI();
+}
+
+// ============================================================
+// PROMPT BUILDING
+// ============================================================
+function buildPrompt(cat, item, index, charDesc) {
+  let scene = String(cat.template || 'A cinematic image of {CHARACTER}. {SETTING}, {LIGHTING}.');
+  const includeChar = cat.includeMainCharacter !== false;
+  const description = String(charDesc || '').trim().replace(/[.!?]+$/g, '').trim();
+  const charPart = includeChar ? (description || 'a clearly visible human character') : 'the subject';
+  const charNote = includeChar
+    ? (description
+      ? `MANDATORY CHARACTER: The same clearly visible person must appear physically in the image. Preserve these identifying features exactly: ${description}. Do not omit, replace, merge, or merely imply this person.`
+      : 'MANDATORY: include a clearly visible human character in the image.')
+    : 'Do not include the reference/main character.';
+  scene = scene.replace(/{CHARACTER}/g, charPart).replace(/{CHARACTER_NOTE}/g, charNote);
+  scene = scene.replace(/{ITEM}/g, item ? String(item.prompt || item.label || '') : '');
+  const matches = [...String(cat.template || '').matchAll(/{([A-Z_0-9]+)}/g)];
+  const slots = [...new Set(matches.map(m => m[1]))].filter(k =>
+    !['CHARACTER','ITEM','CHARACTER_NOTE'].includes(k) && Array.isArray(cat.variations?.[k]));
+  const multipliers = {}; let mult = 1;
+  for (const slot of slots) { multipliers[slot] = mult; mult *= Math.max(1,cat.variations[slot].length); }
+  for (const slot of slots) {
+    const choices = cat.variations[slot] || [];
+    scene = scene.replace(new RegExp('\\{' + slot + '\\}', 'g'), choices.length ? choices[Math.floor(index / multipliers[slot]) % choices.length] : '');
+  }
+  scene = scene.replace(/{[A-Z_0-9]+}/g,'').replace(/,\s*,/g,',').replace(/\s+/g,' ').trim();
+
+  const style = String($('styleInput').value || STYLE_PRESETS[DEFAULT_STYLE_KEY].prompt).trim();
+  // La direction artistique est répétée dans un bloc explicite de priorité élevée :
+  // cela évite que le modèle traite le style comme un simple adjectif introductif.
+  return [
+    'PRIMARY VISUAL SUBJECT AND ACTION: ' + scene,
+    'DOMINANT ART DIRECTION — HIGHEST PRIORITY: ' + style,
+    'STYLE EXECUTION RULES: The selected art direction must govern the entire image, not just the colors. Apply its characteristic medium, linework or brushwork, shape language, palette, contrast, texture, era, production design and visual rhythm to every object, background and character. The result must be immediately recognizable as belonging to this visual tradition. Do not default to generic photorealism or a generic digital-art look unless explicitly requested by the style.',
+    'LIGHTING AND COLOR: Use lighting, color temperature, saturation and contrast consistent with the dominant art direction.',
+    'COMPOSITION AND MATERIAL: Keep framing readable; apply the style-specific perspective, negative space, contours, surface texture and detail density.',
+    'CHARACTER CONSTRAINT: ' + charNote,
+    'QUALITY AND COHERENCE: one coherent image, deliberate visual hierarchy, clean anatomy and object structure, no accidental collage, no unrelated styles, no watermark, no unintended text.'
+  ].join('\n\n').trim();
+}
+
+
+function buildPreviewPrompt(cat, charDesc) {
+  let item = null;
+  if (cat.mode === 'items' && cat.selectedItems.length > 0) {
+    const firstId = cat.selectedItems[0];
+    item = cat.items.find(i => i.id === firstId) || null;
+  }
+  return buildPrompt(cat, item, 0, charDesc);
+}
+
+// ============================================================
+// ANALYSE PERSONNAGE
+// ============================================================
+async function extractCharacter() {
+  if (!state.image) return toast('Aucune image', 'warn');
+  $('analyzeBtn').disabled = true;
+  $('analyzeBtn').textContent = '🔍 Analyse…';
+  $('analyzeStatus').className = 'status loading';
+  $('analyzeStatusText').textContent = 'Analyse forensique…';
+  human('🔍 Analyse du personnage…');
+  try {
+    const desc = await apiVision(VISION_SYS, VISION_USER, state.image, { minWords: 100, maxTokens: 900, temperature: 0 });
+    $('charDescInput').value = desc;
+    updateCharLen(); updateCharBadge();
+    $('analyzeStatus').className = 'status ok';
+    $('analyzeStatusText').textContent = `✓ Analysé (${wordCount(desc)} mots)`;
+    toast(`Analyse : ${wordCount(desc)} mots`, 'success');
+    await saveUserData();
+    updateUI();
+  } catch (e) {
+    debug('Erreur analyse : ' + e.message, 'err');
+    $('analyzeStatus').className = 'status err';
+    $('analyzeStatusText').textContent = 'Échec — écrivez à la main';
+    toast('Échec : ' + e.message, 'error');
+  } finally {
+    $('analyzeBtn').disabled = false;
+    $('analyzeBtn').textContent = '🔍 Analyser le personnage';
+    updateUI();
+  }
+}
+
+// ============================================================
+// ANALYSE STYLE IMAGE
+// ============================================================
+async function extractStyleFromImage() {
+  if (!state.styleImage) return toast('Aucune image de style', 'warn');
+  $('analyzeStyleBtn').disabled = true;
+  $('analyzeStyleBtn').textContent = '🔍 Analyse…';
+  $('styleAnalyzeStatus').className = 'status loading';
+  $('styleAnalyzeStatusText').textContent = 'Extraction du style…';
+  human('🎨 Analyse du style…');
+  try {
+    const desc = await apiVision(STYLE_VISION_SYS, STYLE_VISION_USER, state.styleImage, { minWords: 80, maxTokens: 700, temperature: 0 });
+    $('styleInput').value = desc;
+    $('styleAnalyzeStatus').className = 'status ok';
+    $('styleAnalyzeStatusText').textContent = `✓ Style extrait (${wordCount(desc)} mots)`;
+    toast('Style extrait', 'success');
+    await saveUserData();
+  } catch (e) {
+    debug('Erreur style : ' + e.message, 'err');
+    $('styleAnalyzeStatus').className = 'status err';
+    $('styleAnalyzeStatusText').textContent = 'Échec';
+    toast('Échec : ' + e.message, 'error');
+  } finally {
+    $('analyzeStyleBtn').disabled = false;
+    $('analyzeStyleBtn').textContent = '🔍 Analyser le style';
+  }
+}
+
+// ============================================================
+// ARTISTE → PROMPT
+// ============================================================
+async function generateArtistPrompt() {
+  const name = $('artistNameInput').value.trim();
+  if (!name) return toast("Entrez un nom d'artiste", 'warn');
+  $('artistGenBtn').disabled = true;
+  $('artistGenBtn').textContent = '✨…';
+  human(`✨ Prompt pour ${name}…`);
+  try {
+    const desc = await apiTextCompletion(ARTIST_PROMPT_SYS, `Artist: ${name}`, { minWords: 80, maxTokens: 600 });
+    $('styleInput').value = desc;
+    const line = `${name} — ${desc.slice(0, 200).replace(/\n/g, ' ')}`;
+    state.presets.painters = (state.presets.painters || '') + '\n' + line;
+    applyPresetsToTextareas();
+    rebuildStyleSelect();
+    await saveUserData();
+    toast(`Style de ${name} mémorisé`, 'success');
+  } catch (e) {
+    toast('Échec : ' + e.message, 'error');
+  } finally {
+    $('artistGenBtn').disabled = false;
+    $('artistGenBtn').textContent = '✨ Générer';
+  }
+}
+
+// ============================================================
+// AMÉLIORATION DE LISTE PAR IA
+// ============================================================
+async function improveList(key) {
+  const mapEl = {
+    photographers: 'cfgPhotographers',
+    painters: 'cfgPainters',
+    styles: 'cfgStyles',
+    animations: 'cfgAnimations',
+    mangas: 'cfgMangas',
+    comics: 'cfgComics',
+    modern: 'cfgModern',
+    filmTypes: 'cfgFilmTypes',
+    posters: 'cfgPosters'
+  };
+  const el = $(mapEl[key]);
+  if (!el) return;
+  const current = el.value.trim();
+  if (!current) return toast('Liste vide', 'warn');
+
+  const btns = document.querySelectorAll(`[data-improve="${key}"]`);
+  btns.forEach(b => { b.disabled = true; b.textContent = '✨ Amélioration…'; });
+  human(`✨ Amélioration de la liste ${key}…`);
+
+  try {
+    const promptUser = `Here is a list of artistic styles to improve. Keep the same number of lines and the same names (before the " — " separator). Enrich each description after the separator with specific visual details (medium, palette, lighting, composition, texture). Return ONLY the improved list, one entry per line, same format "Name — description".\n\n${current}`;
+    const improved = await apiTextCompletion(IMPROVE_LIST_SYS, promptUser, { minWords: 100, maxTokens: 2500 });
+    // Nettoyage : enlever préfixes éventuels type "1." ou "-"
+    const cleaned = improved.split('\n').map(l => l.replace(/^\s*(\d+[\.\)]\s*|[-*•]\s*)/, '').trim()).filter(Boolean).join('\n');
+    if (cleaned.split('\n').length < 2) throw new Error('Réponse trop courte');
+    el.value = cleaned;
+    readPresetsFromTextareas();
+    await saveUserData();
+    rebuildStyleSelect();
+    toast(`Liste ${key} améliorée`, 'success');
+    human(`✅ Liste ${key} améliorée (${cleaned.split('\n').length} entrées)`);
+  } catch (e) {
+    debug(`Erreur amélioration ${key}: ${e.message}`, 'err');
+    toast('Échec : ' + e.message, 'error');
+  } finally {
+    btns.forEach(b => { b.disabled = false; b.textContent = '✨ Améliorer cette liste par IA'; });
+  }
+}
+
+// ============================================================
+// GÉNÉRATION
+// ============================================================
+async function generateLibrary() {
+  if (state.isRunning) return;
+
+  const charDesc = $('charDescInput').value.trim();
+  // Validation : description OU image (au moins une source pour les catégories qui demandent un personnage)
+  const hasCharSource = charDesc.length > 0 || !!state.image;
+  const active = state.categories.filter(c => c.enabled && computeTotalImages(c) > 0);
+  if (active.length === 0) return toast('Activez au moins une catégorie', 'error');
+
+  // Catégories nécessitant un personnage
+  const needsChar = active.some(c => c.includeMainCharacter !== false);
+  if (needsChar && !hasCharSource) {
+    return toast('Image ou description du personnage requise', 'error');
+  }
+
+  // Si on a une image mais pas de description, on analyse d'abord
+  if (state.image && !charDesc) {
+    toast('Analyse de l\'image du personnage…', 'warn');
+    try {
+      const desc = await apiVision(VISION_SYS, VISION_USER, state.image, { minWords: 100, maxTokens: 900, temperature: 0 });
+      $('charDescInput').value = desc;
+      updateCharLen(); updateCharBadge();
+      await saveUserData();
+    } catch (e) {
+      debug('Analyse auto échouée : ' + e.message, 'err');
+      // On continue quand même, buildPrompt utilisera "the person"
+    }
+  }
+
+  const finalCharDesc = $('charDescInput').value.trim();
+
+  state.isRunning = true;
+  state.stopRequested = false;
+  $('generateBtn').disabled = true;
+  $('stopBtn').classList.remove('hidden');
+  $('resultsCard').classList.remove('hidden');
+
+  const tasks = [];
+  state.results = {};
+  for (const cat of active) {
+    state.results[cat.id] = [];
+    if (cat.mode === 'items') {
+      const selected = cat.items.filter(i => cat.selectedItems.includes(i.id));
+      for (const item of selected) {
+        for (let i = 0; i < cat.perItem; i++) {
+          const prompt = buildPrompt(cat, item, i, finalCharDesc);
+          const task = { uid: uid(), catId: cat.id, catName: cat.name, catIcon: cat.icon, itemLabel: item.label, index: i, prompt, status: 'pending', url: null };
+          state.results[cat.id].push(task); tasks.push(task);
+        }
+      }
+    } else {
+      for (let i = 0; i < cat.count; i++) {
+        const prompt = buildPrompt(cat, null, i, finalCharDesc);
+        const task = { uid: uid(), catId: cat.id, catName: cat.name, catIcon: cat.icon, itemLabel: null, index: i, prompt, status: 'pending', url: null };
+        state.results[cat.id].push(task); tasks.push(task);
+      }
+    }
+  }
+
+  human(`🎬 Génération de ${tasks.length} images…`);
+  renderResults(active);
+  updateProgress(tasks.length);
+
+  let cursor = 0;
+  const workers = Array.from({ length: WORKER_COUNT }, () => (async function worker() {
+    while (cursor < tasks.length) {
+      if (state.stopRequested) return;
+      const task = tasks[cursor++];
+      updateResultCard(task, 'generating');
+      try {
+        const url = await apiImageGenerate(task.prompt);
+        task.url = url; task.status = 'done';
+        updateResultCard(task, 'done');
+        await addToGallery(url, { catName: task.catName, prompt: task.prompt, sourceImage: state.image || null, style: $('styleInput').value });
+      } catch (e) {
+        task.status = 'error'; task.error = e.message;
+        updateResultCard(task, 'error');
+        debug(`✗ ${task.catName} #${task.index + 1} : ${e.message}`, 'err');
+      }
+      updateProgress(tasks.length);
+    }
+  })());
+
+  await Promise.all(workers);
+
+  state.isRunning = false;
+  $('generateBtn').disabled = false;
+  $('stopBtn').classList.add('hidden');
+  const done = tasks.filter(t => t.status === 'done').length;
+  const failed = tasks.filter(t => t.status === 'error').length;
+  human(`🏁 ${done}/${tasks.length} réussies · ${failed} échouées.`);
+  toast(`Bibliothèque : ${done}/${tasks.length}`, done === tasks.length ? 'success' : 'warn', 4000);
+  updateUI();
+}
+
+function renderResults(activeCategories) {
+  const root = $('resultsRoot');
+  root.innerHTML = '';
+  for (const cat of activeCategories) {
+    const section = document.createElement('div');
+    section.className = 'result-category';
+    const taskCount = state.results[cat.id].length;
+    section.innerHTML = `<h3><span>${cat.icon} ${esc(cat.name)}</span><span class="cat-stat" id="rstat-${cat.id}">0/${taskCount}</span></h3>`;
+    const grid = document.createElement('div');
+    grid.className = 'result-grid';
+    grid.id = 'rgrid-' + cat.id;
+    section.appendChild(grid);
+    root.appendChild(section);
+
+    for (const task of state.results[cat.id]) {
+      const card = document.createElement('div');
+      card.className = 'result-card pending';
+      card.id = `rcard-${task.uid}`;
+      const label = task.itemLabel ? `${task.itemLabel} #${task.index + 1}` : `#${task.index + 1}`;
+      card.innerHTML = `<div class="result-img"><div class="load"><div class="spin"></div><div>${cat.icon} ${esc(label)}</div></div></div><div class="result-meta"><span>${esc(label)}</span><span>en attente</span></div>`;
+      grid.appendChild(card);
+    }
+  }
+}
+
+function updateResultCard(task, status) {
+  const card = $(`rcard-${task.uid}`);
+  if (!card) return;
+  card.className = 'result-card ' + status;
+  const label = task.itemLabel ? `${task.itemLabel} #${task.index + 1}` : `#${task.index + 1}`;
+  if (status === 'generating') {
+    card.querySelector('.result-img').innerHTML = `<div class="load"><div class="spin"></div><div>${task.catIcon} ${esc(label)}<br>génération…</div></div>`;
+    card.querySelector('.result-meta').innerHTML = `<span>${esc(label)}</span><span>…</span>`;
+  } else if (status === 'done') {
+    card.querySelector('.result-img').innerHTML = `<img src="${task.url}" loading="lazy" alt="">`;
+    card.querySelector('.result-meta').innerHTML = `<span>${esc(label)}</span><a href="${task.url}" target="_blank" rel="noopener" download>⬇</a>`;
+    const stat = $(`rstat-${task.catId}`);
+    if (stat) {
+      const done = state.results[task.catId].filter(t => t.status === 'done').length;
+      stat.textContent = `${done}/${state.results[task.catId].length}`;
+    }
+  } else if (status === 'error') {
+    card.querySelector('.result-img').innerHTML = `<div class="err">✕<small>${esc(task.error || '').slice(0, 60)}</small></div>`;
+    card.querySelector('.result-meta').innerHTML = `<span>${esc(label)}</span><span style="color:var(--err)">échec</span>`;
+  }
+}
+
+function updateProgress(total) {
+  const all = Object.values(state.results).flat();
+  const done = all.filter(t => t.status === 'done').length;
+  const failed = all.filter(t => t.status === 'error').length;
+  const pct = total > 0 ? Math.round(((done + failed) / total) * 100) : 0;
+  const fill = $('progressFill');
+  fill.style.width = pct + '%';
+  if (pct === 100) fill.classList.add('done');
+  $('progressPct').textContent = pct + '%';
+  $('resultsBadge').textContent = `${done} / ${total}`;
+}
+
+// ============================================================
+// UI
+// ============================================================
+function updateUI() {
+  const hasKeys = state.apiKeys.length > 0;
+  const hasCharSource = $('charDescInput').value.trim().length > 0 || !!state.image;
+  const hasActiveCats = state.categories.some(c => c.enabled && computeTotalImages(c) > 0);
+
+  $('analyzeBtn').disabled = !hasKeys || !state.image || state.isRunning;
+  $('analyzeStyleBtn').disabled = !hasKeys || !state.styleImage || state.isRunning;
+  $('generateBtn').disabled = !hasKeys || !hasCharSource || !hasActiveCats || state.isRunning || !state.user;
+}
+
+function updateCharLen() {
+  const n = $('charDescInput').value.trim().length;
+  $('charDescLen').textContent = `${n} caractère${n > 1 ? 's' : ''}`;
+  updateCharBadge();
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function setupTopTabs() {
+  document.querySelectorAll('.topnav .tab').forEach(tab => {
+    tab.onclick = () => {
+      document.querySelectorAll('.topnav .tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const name = tab.dataset.tab;
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      const target = $('tab-' + name);
+      if (target) target.classList.add('active');
+    };
+  });
+}
+
+// ============================================================
+// BINDINGS
+// ============================================================
+function bind() {
+  setupTopTabs();
+
+  // Auth
+  $('authRegisterBtn').onclick = async () => {
+    try {
+      const u = await registerUser($('authEmail').value, $('authPin').value);
+      await setUserSession(u);
+      toast('Compte créé', 'success');
+    } catch (e) { toast(e.message, 'error'); }
+  };
+  $('authLoginBtn').onclick = async () => {
+    try {
+      const u = await loginUser($('authEmail').value, $('authPin').value);
+      await setUserSession(u);
+      toast('Connecté', 'success');
+    } catch (e) { toast(e.message, 'error'); }
+  };
+  $('authLogoutBtn').onclick = () => setUserSession(null);
+
+  // Modes personnage : un seul panneau visible, les champs restent conservés.
+  function setCharMode(mode) {
+    state.charMode = (mode === 'text') ? 'text' : 'image';
+    document.querySelectorAll('[data-char-mode]').forEach(t => {
+      const active = t.getAttribute('data-char-mode') === state.charMode;
+      t.classList.toggle('active', active);
+      t.setAttribute('aria-pressed', String(active));
+    });
+    const imagePanel = $('charModeImage');
+    const textPanel = $('charModeText');
+    if (imagePanel) imagePanel.classList.toggle('hidden', state.charMode !== 'image');
+    if (textPanel) textPanel.classList.toggle('hidden', state.charMode !== 'text');
+    // Le sélecteur d'image est reconstruit à la réouverture sans effacer l'image mémorisée.
+    if (state.charMode === 'image') refreshCharSlot();
+  }
+  document.querySelectorAll('[data-char-mode]').forEach(tab => {
+    tab.onclick = () => setCharMode(tab.getAttribute('data-char-mode'));
+  });
+
+  // Modes de direction artistique : revenir sur Preset restaure bien son formulaire.
+  function setStyleMode(mode) {
+    state.styleMode = ['preset', 'image', 'artist'].includes(mode) ? mode : 'preset';
+    document.querySelectorAll('[data-style-mode]').forEach(t => {
+      const active = t.getAttribute('data-style-mode') === state.styleMode;
+      t.classList.toggle('active', active);
+      t.setAttribute('aria-pressed', String(active));
+    });
+    const presetPanel = $('styleModePreset');
+    const imagePanel = $('styleModeImage');
+    const artistPanel = $('styleModeArtist');
+    if (presetPanel) presetPanel.classList.toggle('hidden', state.styleMode !== 'preset');
+    if (imagePanel) imagePanel.classList.toggle('hidden', state.styleMode !== 'image');
+    if (artistPanel) artistPanel.classList.toggle('hidden', state.styleMode !== 'artist');
+    if (state.styleMode === 'preset') {
+      // Garde le formulaire et sa sélection ; reconstruit uniquement une liste vide.
+      const select = $('styleSelect');
+      if (select && !select.options.length) rebuildStyleSelect();
+    }
+    if (state.styleMode === 'image') refreshStyleSlot();
+  }
+  document.querySelectorAll('[data-style-mode]').forEach(tab => {
+    tab.onclick = () => setStyleMode(tab.getAttribute('data-style-mode'));
+  });
+
+  // Style select
+  $('styleSelect').onchange = (e) => {
+    const found = findPresetByKey(e.target.value);
+    if (found) $('styleInput').value = found.prompt;
+    saveUserData();
+  };
+
+  // Keys
+  $('validateBtn').onclick = () => validateAndSaveKeys(true);
+  $('clearKeysBtn').onclick = () => {
+    state.apiKeys = []; state.keyHealth = []; state.keyScores = [];
+    state.keysLoadedFromDB = false;
+    $('keysInput').value = '';
+    $('keyBadge').textContent = '0 clé';
+    $('keyStatus').className = 'status';
+    $('keyStatusText').textContent = 'Aucune clé';
+    $('keysPanel').innerHTML = '';
+    saveUserData(); updateUI();
+  };
+
+  $('analyzeBtn').onclick = extractCharacter;
+  $('analyzeStyleBtn').onclick = extractStyleFromImage;
+  $('artistGenBtn').onclick = generateArtistPrompt;
+  $('charDescInput').addEventListener('input', () => { updateCharLen(); updateUI(); saveUserData(); });
+  $('styleInput').addEventListener('input', () => saveUserData());
+
+  $('addCategoryBtn').onclick = addNewCategory;
+  $('resetPlannerBtn').onclick = () => {
+    if (!confirm('Réinitialiser toutes les catégories ?')) return;
+    initCategories(); renderCategories(); saveUserData();
+  };
+
+  $('generateBtn').onclick = generateLibrary;
+  $('stopBtn').onclick = () => { state.stopRequested = true; toast('Arrêt…', 'warn'); };
+
+  $('refreshGalleryBtn').onclick = renderGallery;
+
+  // Éditeur de galerie
+  $('closeImageEditor').onclick = () => $('imageEditorModal').classList.add('hidden');
+  $('imageEditorModal').addEventListener('click', e => { if (e.target.id === 'imageEditorModal') e.currentTarget.classList.add('hidden'); });
+  $('editGenerate').onclick = createEditedImage;
+  $('editAnalyzeSource').onclick = async () => {
+    if (!editingGalleryItem?.url) return;
+    try {
+      setEditStatus('Analyse de l’image en texte…', 'loading');
+      const desc = await analyzeImageToText(editingGalleryItem.url);
+      $('editPrompt').value = desc + '\n\nInstruction de transformation : ';
+      $('editPrompt').dataset.analyzeSource = '1';
+      setEditStatus('Analyse terminée. Ajoutez vos modifications puis générez.', 'ok');
+    } catch(e) { setEditStatus('Analyse impossible : ' + e.message, 'err'); }
+  };
+  // Autosauvegarde des listes propres à la session utilisateur.
+  for (const id of ['cfgPhotographers','cfgPainters','cfgStyles','cfgAnimations','cfgMangas','cfgComics','cfgModern','cfgFilmTypes','cfgPosters']) {
+    $(id).addEventListener('change', async () => { readPresetsFromTextareas(); await saveUserData(); });
+  }
+  $('styleInput').addEventListener('change', saveUserData);
+  $('charDescInput').addEventListener('change', saveUserData);
+
+  // Config
+  $('configSaveBtn').onclick = async () => {
+    readPresetsFromTextareas();
+    await saveUserData();
+    rebuildStyleSelect();
+    $('configStatus').className = 'status ok';
+    $('configStatusText').textContent = 'Listes sauvegardées';
+    toast('Listes sauvegardées', 'success');
+  };
+  $('configResetBtn').onclick = () => {
+    if (!confirm('Réinitialiser les listes ?')) return;
+    state.presets = deepCopy(PRESET_DEFAULTS);
+    applyPresetsToTextareas();
+    rebuildStyleSelect();
+    saveUserData();
+    toast('Listes réinitialisées', 'success');
+  };
+  $('configExportBtn').onclick = () => {
+    readPresetsFromTextareas();
+    const blob = new Blob([JSON.stringify(state.presets, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'moebius_presets.json';
+    a.click();
+  };
+  $('configImportBtn').onclick = () => {
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = '.json';
+    inp.onchange = async () => {
+      const f = inp.files[0]; if (!f) return;
+      const txt = await f.text();
+      try {
+        state.presets = JSON.parse(txt);
+        applyPresetsToTextareas();
+        rebuildStyleSelect();
+        await saveUserData();
+        toast('Listes importées', 'success');
+      } catch (e) { toast('JSON invalide', 'error'); }
+    };
+    inp.click();
+  };
+
+  // Boutons d'amélioration de liste
+  document.querySelectorAll('[data-improve]').forEach(btn => {
+    btn.onclick = () => improveList(btn.dataset.improve);
+  });
+
+  // Console
+  const handle = $('panelHandle');
+  const content = $('panelContent');
+  let open = false;
+  handle.onclick = (e) => {
+    if (e.target.tagName === 'BUTTON') return;
+    open = !open;
+    content.classList.toggle('hidden', !open);
+    $('panelToggle').textContent = (open ? '▲' : '▼') + ' CONSOLE';
+  };
+  $('copyConsoleBtn').onclick = () => {
+    const text = state.debugLog.map(e => `[${e.t}] ${e.m}`).join('\n');
+    navigator.clipboard.writeText(text).then(() => toast('Console copiée'));
+  };
+  $('clearConsoleBtn').onclick = () => { state.debugLog = []; state.humanLog = []; renderDebug(); renderHuman(); };
+
+  // INIT
+  initCategories();
+  state.presets = deepCopy(PRESET_DEFAULTS);
+  applyPresetsToTextareas();
+  rebuildStyleSelect();
+  setCharMode(state.charMode || 'image');
+  setStyleMode(state.styleMode || 'preset');
+  refreshStyleSlot();
+  renderCategories();
+  updateCharLen();
+  updateUI();
+
+  // Session restore
+  const saved = sessionStorage.getItem('moebius_user');
+  if (saved) {
+    try { setUserSession(JSON.parse(saved)); } catch (e) {}
+  } else {
+    human('✦ Prêt. Onglet Compte pour se connecter.');
+  }
+  renderGallery();
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+else bind();
+</script>
+</body>
+</html>
